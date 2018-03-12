@@ -4,8 +4,8 @@ var ResultItem = load("res://ResultItem.tscn")
 
 var api = preload("res://Api.gd").new()
 
-onready var grid = $VBoxContainer/ResultsGrid
-onready var trailer = $VBoxContainer/Trailer
+onready var grid = find_node("ResultsGrid")
+onready var trailer = find_node("Trailer")
 
 var next_page_url
 

@@ -1,9 +1,19 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
-[ext_resource path="res://Paginator.gd" type="Script" id=2]
+[ext_resource path="res://sketchfab.png" type="Texture" id=2]
+[ext_resource path="res://Paginator.gd" type="Script" id=3]
 
-[node name="Main" type="Control"]
+[sub_resource type="GDScript" id=1]
+
+script/source = "tool
+extends Control
+
+func _draw():
+	draw_rect(get_rect(), Color(1.0, 1.0, 1.0))
+"
+
+[node name="Main" type="Control" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -18,7 +28,7 @@ size_flags_vertical = 1
 script = ExtResource( 1 )
 _sections_unfolded = [ "Anchor", "Margin", "Mouse", "Rect", "Size Flags" ]
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." index="0"]
+[node name="All" type="VBoxContainer" parent="." index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -31,16 +41,336 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 0
-_sections_unfolded = [ "Anchor", "Margin", "Size Flags", "custom_constants" ]
+_sections_unfolded = [ "Anchor", "Hint", "Margin", "Material", "Rect", "Size Flags", "custom_constants" ]
 
-[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer" index="0"]
+[node name="Header" type="MarginContainer" parent="All" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 1024.0
-margin_bottom = 38.0
+margin_bottom = 110.0
+rect_min_size = Vector2( 0, 110 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_constants/margin_right = 10
+custom_constants/margin_top = 8
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 6
+script = SubResource( 1 )
+_sections_unfolded = [ "Material", "Mouse", "Rect", "Size Flags", "Theme", "custom_constants" ]
+
+[node name="_" type="HBoxContainer" parent="All/Header" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 10.0
+margin_top = 8.0
+margin_right = 1014.0
+margin_bottom = 104.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+alignment = 0
+
+[node name="Logo" type="TextureRect" parent="All/Header/_" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 18.0
+margin_right = 242.0
+margin_bottom = 78.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 2
+size_flags_vertical = 4
+texture = ExtResource( 2 )
+stretch_mode = 0
+_sections_unfolded = [ "Size Flags" ]
+
+[node name="Logged" type="VBoxContainer" parent="All/Header/_" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 720.0
+margin_top = 11.0
+margin_right = 860.0
+margin_bottom = 85.0
+rect_min_size = Vector2( 140, 0 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 0
+size_flags_vertical = 4
+alignment = 0
+_sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect", "Size Flags" ]
+
+[node name="_2" type="Label" parent="All/Header/_/Logged" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 140.0
+margin_bottom = 14.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+custom_colors/font_color = Color( 0.4, 0.4, 0.4, 1 )
+text = "Logged as"
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "custom_colors" ]
+
+[node name="_" type="HBoxContainer" parent="All/Header/_/Logged" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 18.0
+margin_right = 140.0
+margin_bottom = 74.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+alignment = 0
+
+[node name="_" type="VBoxContainer" parent="All/Header/_/Logged/_" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 140.0
+margin_bottom = 56.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 3
+size_flags_vertical = 1
+alignment = 0
+_sections_unfolded = [ "Size Flags" ]
+
+[node name="UserName" type="Label" parent="All/Header/_/Logged/_/_" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 140.0
+margin_bottom = 14.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "User name"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Plan" type="Label" parent="All/Header/_/Logged/_/_" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 18.0
+margin_right = 140.0
+margin_bottom = 32.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Plan"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Logout" type="Button" parent="All/Header/_/Logged/_/_" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 36.0
+margin_right = 140.0
+margin_bottom = 56.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 3
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Logout"
+flat = false
+align = 1
+_sections_unfolded = [ "Size Flags" ]
+
+[node name="NotLogged" type="VBoxContainer" parent="All/Header/_" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 864.0
+margin_top = 1.0
+margin_right = 1004.0
+margin_bottom = 95.0
+rect_min_size = Vector2( 140, 0 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 0
+size_flags_vertical = 4
+alignment = 0
+_sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect", "Size Flags" ]
+
+[node name="_" type="Label" parent="All/Header/_/NotLogged" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 140.0
+margin_bottom = 14.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+custom_colors/font_color = Color( 0.4, 0.4, 0.4, 1 )
+text = "You're not logged"
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "custom_colors" ]
+
+[node name="UserName" type="LineEdit" parent="All/Header/_/NotLogged" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 18.0
+margin_right = 140.0
+margin_bottom = 42.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+focus_mode = 2
+context_menu_enabled = true
+placeholder_text = "User"
+placeholder_alpha = 0.6
+caret_blink = false
+caret_blink_speed = 0.65
+caret_position = 0
+_sections_unfolded = [ "Placeholder", "custom_colors" ]
+
+[node name="Password" type="LineEdit" parent="All/Header/_/NotLogged" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 46.0
+margin_right = 140.0
+margin_bottom = 70.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+secret = true
+focus_mode = 2
+context_menu_enabled = true
+placeholder_text = "Password"
+placeholder_alpha = 0.6
+caret_blink = false
+caret_blink_speed = 0.65
+caret_position = 0
+_sections_unfolded = [ "Placeholder", "custom_colors" ]
+
+[node name="Login" type="Button" parent="All/Header/_/NotLogged" index="3"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 74.0
+margin_right = 140.0
+margin_bottom = 94.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Login"
+flat = false
+align = 1
+_sections_unfolded = [ "Rect", "Size Flags" ]
+
+[node name="SearchPanel" type="PanelContainer" parent="All" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 114.0
+margin_right = 1024.0
+margin_bottom = 152.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -49,7 +379,7 @@ size_flags_horizontal = 1
 size_flags_vertical = 1
 _sections_unfolded = [ "Size Flags" ]
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/PanelContainer" index="0"]
+[node name="_" type="HBoxContainer" parent="All/SearchPanel" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -69,7 +399,7 @@ custom_constants/separation = 10
 alignment = 1
 _sections_unfolded = [ "Anchor", "Margin", "Size Flags", "custom_constants" ]
 
-[node name="SearchLabel" type="Label" parent="VBoxContainer/PanelContainer/HBoxContainer" index="0"]
+[node name="_" type="Label" parent="All/SearchPanel/_" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -90,7 +420,7 @@ lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Focus", "Margin", "Rect", "Size Flags" ]
 
-[node name="SearchText" type="LineEdit" parent="VBoxContainer/PanelContainer/HBoxContainer" index="1"]
+[node name="Text" type="LineEdit" parent="All/SearchPanel/_" index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -114,7 +444,7 @@ caret_blink_speed = 0.65
 caret_position = 0
 _sections_unfolded = [ "Caret", "Placeholder", "Size Flags" ]
 
-[node name="SearchButton" type="Button" parent="VBoxContainer/PanelContainer/HBoxContainer" index="2"]
+[node name="Button" type="Button" parent="All/SearchPanel/_" index="2"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -140,13 +470,13 @@ flat = false
 align = 1
 _sections_unfolded = [ "Anchor", "Focus", "Margin", "Mouse", "Size Flags", "Theme", "custom_styles" ]
 
-[node name="Paginator" type="ScrollContainer" parent="VBoxContainer" index="1"]
+[node name="Paginator" type="ScrollContainer" parent="All" index="2"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 42.0
+margin_top = 156.0
 margin_right = 1024.0
 margin_bottom = 600.0
 rect_pivot_offset = Vector2( 0, 0 )
@@ -159,10 +489,10 @@ scroll_horizontal_enabled = true
 scroll_horizontal = 0
 scroll_vertical_enabled = true
 scroll_vertical = 0
-script = ExtResource( 2 )
+script = ExtResource( 3 )
 _sections_unfolded = [ "Anchor", "Margin", "Material", "Rect", "Size Flags", "Theme" ]
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Paginator" index="0"]
+[node name="_" type="VBoxContainer" parent="All/Paginator" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -179,7 +509,7 @@ size_flags_vertical = 1
 alignment = 0
 _sections_unfolded = [ "Size Flags" ]
 
-[node name="ResultsGrid" type="GridContainer" parent="VBoxContainer/Paginator/VBoxContainer" index="0"]
+[node name="ResultsGrid" type="GridContainer" parent="All/Paginator/_" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -197,7 +527,7 @@ custom_constants/hseparation = 10
 columns = 4
 _sections_unfolded = [ "Size Flags", "custom_constants" ]
 
-[node name="Trailer" type="CenterContainer" parent="VBoxContainer/Paginator/VBoxContainer" index="1"]
+[node name="Trailer" type="CenterContainer" parent="All/Paginator/_" index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -216,7 +546,7 @@ size_flags_vertical = 1
 use_top_left = false
 _sections_unfolded = [ "Rect", "Size Flags" ]
 
-[node name="Label" type="Label" parent="VBoxContainer/Paginator/VBoxContainer/Trailer" index="0"]
+[node name="Label" type="Label" parent="All/Paginator/_/Trailer" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -237,8 +567,20 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[connection signal="text_entered" from="VBoxContainer/PanelContainer/HBoxContainer/SearchText" to="." method="_on_SearchText_text_entered"]
+[connection signal="pressed" from="All/Header/_/Logged/_/_/Logout" to="." method="_on_Logout_pressed"]
 
-[connection signal="pressed" from="VBoxContainer/PanelContainer/HBoxContainer/SearchButton" to="." method="_on_SearchButton_pressed"]
+[connection signal="text_changed" from="All/Header/_/NotLogged/UserName" to="." method="_on_any_login_text_changed"]
+
+[connection signal="text_entered" from="All/Header/_/NotLogged/UserName" to="." method="_on_UserName_text_entered"]
+
+[connection signal="text_changed" from="All/Header/_/NotLogged/Password" to="." method="_on_any_login_text_changed"]
+
+[connection signal="text_entered" from="All/Header/_/NotLogged/Password" to="." method="_on_Password_text_entered"]
+
+[connection signal="pressed" from="All/Header/_/NotLogged/Login" to="." method="_on_Login_pressed"]
+
+[connection signal="text_entered" from="All/SearchPanel/_/Text" to="." method="_on_SearchText_text_entered"]
+
+[connection signal="pressed" from="All/SearchPanel/_/Button" to="." method="_on_SearchButton_pressed"]
 
 

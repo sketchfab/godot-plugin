@@ -13,6 +13,12 @@ class Result:
 		
 	func _is_ok():
 		return code >= 0
+		
+const DEFAULT_OPTIONS = {
+	"method": HTTPClient.METHOD_GET,
+	"encoding": "json",
+	"token": null,
+}
 
 var hostname
 var use_ssl
@@ -41,7 +47,7 @@ func term():
 	terminated = true
 	http.close()
 
-func request(path, payload = null):
+func request(path, payload = null, options = DEFAULT_OPTIONS):
 	while busy && !terminated:
 		yield(Engine.get_main_loop(), "idle_frame")
 		if terminated:
@@ -92,15 +98,32 @@ func request(path, payload = null):
 		emit_signal("completed", null)
 		return
 
+	var encoded_payload = ""
+	var headers = []
+	if payload:
+		var encoding = _get_option(options, "encoding")
+		if encoding == "json":
+			encoded_payload = to_json(payload)
+		elif encoding == "form":
+			headers.append("Content-Type: application/x-www-form-urlencoded")
+			encoded_payload = http.query_string_from_dict(payload)
+
+	var token = _get_option(options, "token")
+	if token:
+		headers.append("Authorization: Bearer %s" % token)
+
 	var uri = path
 	if _is_debugging():
 		print("QUERY")
 		print("URI: %s" % path)
-		if payload:
+		if headers.size():
+			print("Headers:")
+			print(headers)
+		if encoded_payload:
 			print("Payload:")
-			print(payload)
+			print(encoded_payload)
 
-	http.request(HTTPClient.METHOD_GET, path, [], '' if !payload else to_json(payload))
+	http.request(_get_option(options, "method"), path, headers, encoded_payload)
 	while true:
 		yield(Engine.get_main_loop(), "idle_frame")
 		if terminated:
@@ -135,6 +158,8 @@ func request(path, payload = null):
 	if _is_debugging():
 		print("RESPONSE")
 		print("Code: %d" % http.get_response_code())
+		print("HEADERS")
+		print(http.get_response_headers())
 
 	var response_body
 	while status == HTTPClient.STATUS_BODY:
@@ -176,3 +201,6 @@ func request(path, payload = null):
 
 func _is_debugging():
 	return true
+
+func _get_option(options, key):
+	return options[key] if options.has(key) else DEFAULT_OPTIONS[key]
