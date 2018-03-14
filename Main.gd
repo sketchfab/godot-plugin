@@ -92,7 +92,7 @@ func _populate_login():
 		_logout()
 		return
 		
-	if !user.has("username"):
+	if !user.has("username") || !user.has("account"):
 		_logout()
 		return
 
@@ -100,6 +100,20 @@ func _populate_login():
 	logged.visible = true
 	
 	logged_name.text = "User: %s" % user["username"]
+
+	var plan_name
+	if user["account"] == "pro":
+		plan_name = "PRO"
+	elif user["account"] == "prem":
+		plan_name = "PREMIUM"
+	elif user["account"] == "biz":
+		plan_name = "BUSINESS"
+	elif user["account"] == "ent":
+		plan_name = "ENTERPRISE"
+	else:
+		plan_name = "BASIC";
+					
+	logged_plan.text = "Plan: %s" % plan_name
 
 func _logout():
 	Api.set_token(null)
