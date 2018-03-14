@@ -1,0 +1,107 @@
+extends Object
+
+const OAUTH_HOSTNAME = "sketchfab.com"
+const API_HOSTNAME = "api.sketchfab.com"
+const USE_SSL = true
+const BASE_PATH = "/v3"
+const CLIENT_ID = "IUO8d5VVOIUCzWQArQ3VuXfbwx5QekZfLeDlpOmW"
+
+static func get_token():
+	return ProjectSettings.get_meta("__sketchfab_token")
+	
+static func set_token(token):
+	ProjectSettings.set_meta("__sketchfab_token", token)
+
+const Requestor = preload("res://Requestor.gd")
+var Result = Requestor.Result
+
+var requestor = Requestor.new(API_HOSTNAME, USE_SSL)
+var busy = false
+
+func term():
+	requestor.term()
+	
+func cancel():
+	yield(requestor.cancel(), "completed")
+
+func login(username, password):
+	var query = {
+		"username": username,
+		"password": password,
+	}
+
+	busy = true
+	var requestor = Requestor.new(OAUTH_HOSTNAME, USE_SSL)
+	requestor.request(
+		"/oauth2/token/?grant_type=password&client_id=%s" % CLIENT_ID, query,
+		{ "method": HTTPClient.METHOD_POST, "encoding": "form" }
+	)
+
+	var result = yield(requestor, "completed")
+	requestor.term()
+	busy = false
+
+	var data = _handle_result(result)
+	if data && typeof(data) == TYPE_DICTIONARY && data.has("access_token"):
+		var token = data["access_token"]
+		set_token(token)
+		return token
+	else:
+		set_token(null)
+		return null
+		
+func get_my_info():
+	busy = true
+	requestor.request("%s/me" % BASE_PATH, null, { "token": get_token() })
+	var result = yield(requestor, "completed")
+	busy = false
+
+	return _handle_result(result)
+
+func search_models(q):
+	var query = {}
+
+	busy = true
+	if q.empty():
+		requestor.request("%s/models" % BASE_PATH, query, { "token": get_token() })
+	else:
+		query.q = q
+		requestor.request("%s/search?type=models" % BASE_PATH, query, { "token": get_token() })
+
+	var result = yield(requestor, "completed")
+	busy = false
+
+	return _handle_result(result)
+	
+func fetch_next_page(url):
+	# Strip protocol + domain
+	var uri = url.right(url.find(API_HOSTNAME) + API_HOSTNAME.length())
+	
+	busy = true
+	requestor.request(uri, null, { "token": get_token() })
+
+	var result = yield(requestor, "completed")
+	busy = false
+
+	return _handle_result(result)
+	
+func _handle_result(result):
+	# Request canceled
+	if !result:
+		return null
+		
+	# General connectivity error
+	if !result.ok:
+		OS.alert('Network operation failed. Try again later.', 'Error')
+		return null
+
+	# HTTP error		
+	var kind = result.code / 100
+	if kind == 4:
+		OS.alert('Not authorized. Please login.', 'Error')
+		return null
+	elif kind == 5:
+		OS.alert('Server error. Try again later.', 'Error')
+		return null
+
+	return result.data
