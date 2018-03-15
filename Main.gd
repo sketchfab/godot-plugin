@@ -18,6 +18,7 @@ onready var logged_name = logged.find_node("UserName")
 onready var logged_plan = logged.find_node("Plan")
 
 var cfg
+var can_search
 
 func _enter_tree():
 	cfg = ConfigFile.new()
@@ -27,16 +28,19 @@ func _exit_tree():
 	cfg.save(CONFIG_FILE_PATH)
 
 func _ready():
+	can_search = false
+
 	logged.visible = false
 	not_logged.visible = false
 	login_name.text = cfg.get_value("api", "user", "")
 	
-	var token = cfg.get_value("api", "token", null)
-	if token:
-		api.set_token(token)
-		_populate_login()
+	if cfg.has_section_key("api", "token"):
+		api.set_token(cfg.get_value("api", "token"))
+		yield(_populate_login(), "completed")
 	else:
 		not_logged.visible = true
+		
+	can_search = true
 	_search()
 
 ##### UI
@@ -77,7 +81,7 @@ func _login():
 	if token:
 		cfg.set_value("api", "token", token)
 		cfg.save(CONFIG_FILE_PATH)
-		_populate_login()
+		yield(_populate_login(), "completed")
 	else:
 		_logout()
 		
@@ -123,6 +127,9 @@ func _logout():
 	logged.visible = false
 
 func _search():
+	if !can_search:
+		return
+
 	paginator.search(search_text.text)
 
 ##### Helpers
