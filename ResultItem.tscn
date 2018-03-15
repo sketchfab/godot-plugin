@@ -1,45 +1,194 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://ResultItem.gd" type="Script" id=1]
+[ext_resource path="res://HttpImage.gd" type="Script" id=2]
 
-[node name="ResultItem" type="Container" index="0"]
+[sub_resource type="StyleBoxFlat" id=1]
+
+content_margin_left = -1.0
+content_margin_right = -1.0
+content_margin_top = -1.0
+content_margin_bottom = -1.0
+bg_color = Color( 0, 0, 0, 1 )
+draw_center = true
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
+border_color = Color( 0.8, 0.8, 0.8, 1 )
+border_blend = false
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+corner_detail = 8
+expand_margin_left = 0.0
+expand_margin_right = 0.0
+expand_margin_top = 0.0
+expand_margin_bottom = 0.0
+shadow_color = Color( 0, 0, 0, 0.6 )
+shadow_size = 0
+anti_aliasing = true
+anti_aliasing_size = 1
+_sections_unfolded = [ "Shadow" ]
+
+[node name="ResultItem" type="PanelContainer" index="0"]
+
+self_modulate = Color( 1, 1, 1, 0.627451 )
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 186.0
+margin_bottom = 222.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 1 )
+_sections_unfolded = [ "Mouse", "Theme", "Visibility", "custom_styles" ]
+
+[node name="_" type="VBoxContainer" parent="." index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = -2.0
-margin_right = 164.0
-margin_bottom = 158.0
-rect_min_size = Vector2( 0, 150 )
+margin_right = 186.0
+margin_bottom = 222.0
+rect_min_size = Vector2( 0, 200 )
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = true
-mouse_filter = 0
+mouse_filter = 2
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 3
-size_flags_vertical = 1
-script = ExtResource( 1 )
-_sections_unfolded = [ "Mouse", "Rect", "Size Flags" ]
+size_flags_vertical = 3
+custom_constants/separation = 8
+alignment = 0
+_sections_unfolded = [ "Mouse", "Rect", "Size Flags", "custom_constants" ]
 
-[node name="Label" type="Label" parent="." index="0"]
+[node name="_" type="MarginContainer" parent="_" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 0.0
-margin_right = 115.0
-margin_bottom = 162.0
+margin_right = 186.0
+margin_bottom = 172.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 0
+custom_constants/margin_left = 0
+_sections_unfolded = [ "Anchor", "Mouse", "Rect", "Size Flags", "custom_constants" ]
+
+[node name="Image" type="Control" parent="_/_" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 186.0
+margin_bottom = 172.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 3
+size_flags_vertical = 7
+script = ExtResource( 2 )
+_sections_unfolded = [ "Mouse", "Size Flags" ]
+max_size = 256
+
+[node name="_2" type="MarginContainer" parent="_" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 180.0
+margin_right = 186.0
+margin_bottom = 222.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-text = "???????????"
+custom_constants/margin_right = 6
+custom_constants/margin_left = 6
+custom_constants/margin_bottom = 10
+_sections_unfolded = [ "Size Flags", "custom_constants" ]
+
+[node name="_" type="VBoxContainer" parent="_/_2" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 6.0
+margin_right = 180.0
+margin_bottom = 32.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+alignment = 0
+_sections_unfolded = [ "custom_constants" ]
+
+[node name="ModelName" type="Label" parent="_/_2/_" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 174.0
+margin_bottom = 14.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+text = "Model name"
+align = 1
 autowrap = true
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
-_sections_unfolded = [ "Anchor", "Margin", "Rect", "Size Flags" ]
+_sections_unfolded = [ "Anchor", "Margin", "Mouse", "Rect", "Size Flags", "custom_colors", "custom_constants" ]
+
+[node name="UserName" type="Label" parent="_/_2/_" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 18.0
+margin_right = 174.0
+margin_bottom = 32.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_colors/font_color = Color( 0.800781, 0.800781, 0.800781, 1 )
+text = "User name"
+align = 1
+autowrap = true
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+_sections_unfolded = [ "Anchor", "Margin", "Rect", "Size Flags", "custom_colors", "custom_constants", "custom_styles" ]
 
 
