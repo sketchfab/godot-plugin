@@ -14,15 +14,23 @@ func _ready():
 
 func _exit_tree():
 	api.term()
-	
-func search(query = ""):
+
+func search(query, categories, animated, staff_picked, min_face_count, max_face_count, sort_by):
 	for item in grid.get_children():
 		grid.remove_child(item)
-	scroll_vertical = 0
-		
+	queue_sort()
+
 	trailer.modulate.a = 1.0
 	yield(api.cancel(), "completed")
-	var result = yield(api.search_models(query), "completed")
+	var result = yield(api.search_models(
+		query,
+		null if categories.size() == 0 else categories,
+		animated,
+		staff_picked,
+		min_face_count,
+		max_face_count,
+		sort_by
+	), "completed")
 	trailer.modulate.a = 0.0
 
 	_process_page(result)
@@ -42,14 +50,14 @@ func _process_page(result):
 	# Canceled?
 	if !result:
 		return
-		
+
 	# Collect and check
 	if typeof(result) != TYPE_DICTIONARY:
 		return
 	var results = _safe_get(result, "results")
 	if typeof(results) != TYPE_ARRAY:
 		return
-		
+
 	# Process
 	for result in results:
 		var item = ResultItem.instance()
