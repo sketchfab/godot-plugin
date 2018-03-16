@@ -1,3 +1,4 @@
+tool
 extends Object
 
 const OAUTH_HOSTNAME = "sketchfab.com"
@@ -16,7 +17,7 @@ static func get_token():
 static func set_token(token):
 	ProjectSettings.set_meta("__sketchfab_token", token)
 
-const Requestor = preload("res://Requestor.gd")
+const Requestor = preload("res://addons/sketchfab/Requestor.gd")
 var Result = Requestor.Result
 
 var requestor = Requestor.new(API_HOSTNAME, USE_SSL)

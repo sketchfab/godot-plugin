@@ -1,9 +1,10 @@
+tool
 extends ScrollContainer
 
-const SafeData = preload("res://SafeData.gd")
-var ResultItem = load("res://ResultItem.tscn")
+const SafeData = preload("res://addons/sketchfab/SafeData.gd")
+var ResultItem = load("res://addons/sketchfab/ResultItem.tscn")
 
-var api = preload("res://Api.gd").new()
+var api = preload("res://addons/sketchfab/Api.gd").new()
 
 onready var grid = find_node("ResultsGrid")
 onready var trailer = find_node("Trailer")

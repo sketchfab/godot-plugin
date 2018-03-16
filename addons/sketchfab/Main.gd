@@ -1,3 +1,4 @@
+tool
 extends Control
 
 const CONFIG_FILE_PATH = "user://sketchfab.ini"
@@ -20,8 +21,8 @@ const SORT_BY_OPTIONS = [
 ]
 const SORT_BY_DEFAULT_INDEX = 1
 
-const SafeData = preload("res://SafeData.gd")
-const Api = preload("res://Api.gd")
+const SafeData = preload("res://addons/sketchfab/SafeData.gd")
+const Api = preload("res://addons/sketchfab/Api.gd")
 var api = Api.new()
 
 onready var search_text = find_node("Search").find_node("Text")
@@ -45,44 +46,49 @@ onready var logged_avatar = logged.find_node("Avatar")
 
 var cfg
 var can_search
+var must_start_up = true
 
 func _enter_tree():
 	cfg = ConfigFile.new()
 	cfg.load(CONFIG_FILE_PATH)
-	
+
 func _exit_tree():
 	cfg.save(CONFIG_FILE_PATH)
 
-func _ready():
+func _notification(what):
+	if what != NOTIFICATION_VISIBILITY_CHANGED:
+		return
+	if !visible || !must_start_up:
+		return
+
+	must_start_up = false
+	
 	logged_avatar.max_size = logged_avatar.rect_min_size.y
 	can_search = false
-	
-	search_category.get_popup().add_check_item("All")
-	search_category.get_popup().connect("index_pressed", self, "_on_Categories_index_pressed")
+
+	search_category.add_item("All")
 
 	for item in FACE_COUNT_OPTIONS:
-		search_face_count.get_popup().add_item(item[0])
+		search_face_count.add_item(item[0])
 	_commit_face_count(0)
-	search_face_count.get_popup().connect("index_pressed", self, "_on_FaceCount_index_pressed")
 
 	for item in SORT_BY_OPTIONS:
-		search_sort_by.get_popup().add_item(item[0])
+		search_sort_by.add_item(item[0])
 	_commit_sort_by(SORT_BY_DEFAULT_INDEX)
-	search_sort_by.get_popup().connect("index_pressed", self, "_on_SortBy_index_pressed")
 
 	logged.visible = false
 	not_logged.visible = false
 	login_name.text = cfg.get_value("api", "user", "")
-	
+
 	if cfg.has_section_key("api", "token"):
 		api.set_token(cfg.get_value("api", "token"))
 		yield(_populate_login(), "completed")
 	else:
 		not_logged.visible = true
-		
+
 	yield(_load_categories(), "completed")
 	_commit_category(0)
-		
+
 	can_search = true
 	_search()
 
@@ -106,15 +112,15 @@ func _on_Logout_pressed():
 func _on_any_search_trigger_changed():
 	_search()
 
-func _on_Categories_index_pressed(index):
+func _on_Categories_item_selected(index):
 	_commit_category(index)
 	_search()
 
-func _on_FaceCount_index_pressed(index):
+func _on_FaceCount_item_selected(index):
 	_commit_face_count(index)
 	_search()
 
-func _on_SortBy_index_pressed(index):
+func _on_SortBy_item_selected(index):
 	_commit_sort_by(index)
 	_search()
 
@@ -177,7 +183,7 @@ func _populate_login():
 		plan_name = "BASIC";
 
 	logged_plan.text = "Plan: %s" % plan_name
-	
+
 	var avatar = SafeData.dictionary(user, "avatar")
 	var images = SafeData.array(avatar, "images")
 	var image = SafeData.dictionary(images, 0)
@@ -199,8 +205,8 @@ func _load_categories():
 	var categories = SafeData.array(result, "results")
 	var i = 0
 	for category in categories:
-		search_category.get_popup().add_check_item(SafeData.string(category, "name"))
-		search_category.get_popup().set_item_metadata(i + 1, SafeData.string(category, "slug"))
+		search_category.add_item(SafeData.string(category, "name"))
+		search_category.set_item_metadata(i + 1, SafeData.string(category, "slug"))
 		i += 1
 
 func _search():
@@ -220,20 +226,12 @@ func _search():
 ##### Helpers
 
 func _commit_category(index):
-	var popup = search_category.get_popup()
-	for i in range(popup.get_item_count()):
-		var checked = i == index
-		popup.set_item_checked(i, checked)
-
-	search_category.text = popup.get_item_text(index)
-	search_category.set_meta("__slug", popup.get_item_metadata(index))
+	search_category.set_meta("__slug", search_category.get_item_metadata(index))
 
 func _commit_face_count(index):
-	search_face_count.text = FACE_COUNT_OPTIONS[index][0]
 	search_face_count.set_meta("__data", FACE_COUNT_OPTIONS[index])
 
 func _commit_sort_by(index):
-	search_sort_by.text = SORT_BY_OPTIONS[index][0]
 	search_sort_by.set_meta("__key", SORT_BY_OPTIONS[index][1])
 
 func _set_login_disabled(disabled):

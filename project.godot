@@ -10,14 +10,13 @@ config_version=3
 
 [application]
 
-config/name="SketchFab"
+config/name="Sketchfab"
 run/main_scene="res://Main.tscn"
 config/icon="res://icon.png"
 
-[display]
+[editor_plugins]
 
-window/size/width=1200
-window/size/height=800
+enabled=PoolStringArray( "sketchfab" )
 
 [rendering]
 

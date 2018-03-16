@@ -1,3 +1,4 @@
+tool
 extends Control
 
 const MAX_COUNT = 4
@@ -16,7 +17,9 @@ func _enter_tree():
 	if !get_tree().has_meta("__http_image_count"):
 		get_tree().set_meta("__http_image_count", 0)	
 
-	add_child(http)
+	if !http.get_parent():
+		add_child(http)
+
 	busy = false
 	if url_to_load:
 		_start_load()
@@ -58,7 +61,7 @@ func _start_load():
 	texture = null
 	update()
 
-	if !url_to_load || url_to_load.empty():
+	if !url_to_load:
 		return
 
 	while true:

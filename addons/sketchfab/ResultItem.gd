@@ -1,6 +1,7 @@
+tool
 extends Container
 
-const SafeData = preload("res://SafeData.gd")
+const SafeData = preload("res://addons/sketchfab/SafeData.gd")
 
 onready var user_name = find_node("UserName")
 onready var model_name = find_node("ModelName")
@@ -12,6 +13,9 @@ func set_data(data):
 	self.data = data
 
 func _ready():
+	if !data:
+		return
+	
 	model_name.text = SafeData.string(data, "name")
 	
 	var user = SafeData.dictionary(data, "user")

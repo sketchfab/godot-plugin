@@ -1,3 +1,4 @@
+tool
 extends Object
 
 signal completed

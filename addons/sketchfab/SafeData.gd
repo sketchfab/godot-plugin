@@ -1,3 +1,5 @@
+tool
+
 static func string(data, key):
 	return data[key] if _safe_has_key(data, key) && typeof(data[key]) == TYPE_STRING else ""
 
