@@ -1,6 +1,8 @@
 tool
 extends Object
 
+const LOG_LEVEL = 1
+
 signal completed
 
 class Result:
@@ -35,7 +37,7 @@ func _init(hostname, use_ssl):
 
 func cancel():
 	if busy:
-		if _is_debugging():
+		if LOG_LEVEL >= 2:
 			print("CANCEL REQUESTED")
 		canceled = true
 	else:
@@ -43,7 +45,7 @@ func cancel():
 	yield(self, "completed")
 
 func term():
-	if _is_debugging():
+	if LOG_LEVEL >= 2:
 		print("TERMINATE REQUESTED")
 	terminated = true
 	http.close()
@@ -52,7 +54,7 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 	while busy && !terminated:
 		yield(Engine.get_main_loop(), "idle_frame")
 		if terminated:
-			if _is_debugging():
+			if LOG_LEVEL >= 2:
 				print("TERMINATE HONORED")
 			return
 
@@ -61,7 +63,7 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 	var status
 
 	if canceled:
-		if _is_debugging():
+		if LOG_LEVEL >= 2:
 			print("CANCEL HONORED (SOFT)")
 		canceled = false
 		busy = false
@@ -73,7 +75,7 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 		while true:
 			yield(Engine.get_main_loop(), "idle_frame")
 			if terminated:
-				if _is_debugging():
+				if LOG_LEVEL >= 2:
 					print("TERMINATE HONORED")
 				return
 
@@ -92,7 +94,7 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 				break
 
 	if canceled:
-		if _is_debugging():
+		if LOG_LEVEL >= 2:
 			print("CANCEL HONORED (SOFT)")
 		canceled = false
 		busy = false
@@ -118,25 +120,26 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 	if token:
 		headers.append("Authorization: Bearer %s" % token)
 
-	if _is_debugging():
+	if LOG_LEVEL >= 1:
 		print("QUERY")
 		print("URI: %s" % uri)
-		if headers.size():
-			print("Headers:")
-			print(headers)
-		if encoded_payload:
-			print("Payload:")
-			print(encoded_payload)
+		if LOG_LEVEL >= 2:
+			if headers.size():
+				print("Headers:")
+				print(headers)
+			if encoded_payload:
+				print("Payload:")
+				print(encoded_payload)
 
 	http.request(_get_option(options, "method"), uri, headers, encoded_payload)
 	while true:
 		yield(Engine.get_main_loop(), "idle_frame")
 		if terminated:
-			if _is_debugging():
+			if LOG_LEVEL >= 2:
 				print("TERMINATE HONORED")
 			return
 		if canceled:
-			if _is_debugging():
+			if LOG_LEVEL >= 2:
 				print("CANCEL HONORED (HARD)")
 			http.close()
 			canceled = false
@@ -160,11 +163,12 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 		]:
 			break
 
-	if _is_debugging():
+	if LOG_LEVEL >= 1:
 		print("RESPONSE")
 		print("Code: %d" % http.get_response_code())
-		print("HEADERS")
-		print(http.get_response_headers())
+		if LOG_LEVEL >= 2:
+			print("HEADERS")
+			print(http.get_response_headers())
 
 	var response_body
 	while status == HTTPClient.STATUS_BODY:
@@ -173,11 +177,11 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 
 		yield(Engine.get_main_loop(), "idle_frame")
 		if terminated:
-			if _is_debugging():
+			if LOG_LEVEL >= 2:
 				print("TERMINATE HONORED")
 			return
 		if canceled:
-			if _is_debugging():
+			if LOG_LEVEL >= 2:
 				print("CANCEL HONORED (HARD)")
 			http.close()
 			canceled = false
@@ -198,14 +202,11 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 	busy = false
 
 	if response_body:
-		if _is_debugging():
+		if LOG_LEVEL >= 2:
 			print("Body: %s..." % response_body.left(70))
 
 	var data = parse_json(response_body) if response_body else null
 	emit_signal("completed", Result.new(http.get_response_code(), data))
-
-func _is_debugging():
-	return true
 
 func _get_option(options, key):
 	return options[key] if options.has(key) else DEFAULT_OPTIONS[key]
