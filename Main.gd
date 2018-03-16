@@ -41,6 +41,7 @@ onready var login_button = not_logged.find_node("Login")
 onready var logged = find_node("Logged")
 onready var logged_name = logged.find_node("UserName")
 onready var logged_plan = logged.find_node("Plan")
+onready var logged_avatar = logged.find_node("Avatar")
 
 var cfg
 var can_search
@@ -48,11 +49,12 @@ var can_search
 func _enter_tree():
 	cfg = ConfigFile.new()
 	cfg.load(CONFIG_FILE_PATH)
-
+	
 func _exit_tree():
 	cfg.save(CONFIG_FILE_PATH)
 
 func _ready():
+	logged_avatar.max_size = logged_avatar.rect_min_size.y
 	can_search = false
 	
 	search_category.get_popup().add_check_item("All")
@@ -175,6 +177,11 @@ func _populate_login():
 		plan_name = "BASIC";
 
 	logged_plan.text = "Plan: %s" % plan_name
+	
+	var avatar = SafeData.dictionary(user, "avatar")
+	var images = SafeData.array(avatar, "images")
+	var image = SafeData.dictionary(images, 0)
+	logged_avatar.url = SafeData.string(image, "url")
 
 func _logout():
 	Api.set_token(null)
@@ -182,6 +189,7 @@ func _logout():
 	cfg.save(CONFIG_FILE_PATH)
 	not_logged.visible = true
 	logged.visible = false
+	logged_avatar.url = null
 
 func _load_categories():
 	var result = yield(api.get_categories(), "completed")
