@@ -16,7 +16,7 @@ func _ready():
 func _exit_tree():
 	api.term()
 
-func search(query, categories, animated, staff_picked, min_face_count, max_face_count, sort_by):
+func search(query, category, animated, staff_picked, min_face_count, max_face_count, sort_by):
 	for item in grid.get_children():
 		grid.remove_child(item)
 	queue_sort()
@@ -25,7 +25,7 @@ func search(query, categories, animated, staff_picked, min_face_count, max_face_
 	yield(api.cancel(), "completed")
 	var result = yield(api.search_models(
 		query,
-		null if categories.size() == 0 else categories,
+		category,
 		animated,
 		staff_picked,
 		min_face_count,

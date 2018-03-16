@@ -71,7 +71,7 @@ func get_categories():
 
 	return _handle_result(result)
 
-func search_models(q, categories, animated, staff_picked, min_face_count, max_face_count, sort_by):
+func search_models(q, category, animated, staff_picked, min_face_count, max_face_count, sort_by):
 	var query = {
 		"type": "models",
 		"downloadable": "true",
@@ -79,8 +79,9 @@ func search_models(q, categories, animated, staff_picked, min_face_count, max_fa
 
 	if q:
 		query.q = q
-	if categories:
-		query.categories = PoolStringArray(categories).join(",")
+	if category:
+		# Intended
+		query.categories = category
 	if animated:
 		query.animated = "true"
 	if staff_picked:

@@ -25,7 +25,7 @@ const Api = preload("res://Api.gd")
 var api = Api.new()
 
 onready var search_text = find_node("Search").find_node("Text")
-onready var search_categories = find_node("Search").find_node("Categories")
+onready var search_category = find_node("Search").find_node("Categories")
 onready var search_animated = find_node("Search").find_node("Animated")
 onready var search_staff_picked = find_node("Search").find_node("StaffPicked")
 onready var search_face_count = find_node("Search").find_node("FaceCount")
@@ -55,8 +55,8 @@ func _exit_tree():
 func _ready():
 	can_search = false
 	
-	search_categories.get_popup().add_check_item("All")
-	search_categories.get_popup().connect("index_pressed", self, "_on_Categories_index_pressed")
+	search_category.get_popup().add_check_item("All")
+	search_category.get_popup().connect("index_pressed", self, "_on_Categories_index_pressed")
 
 	for item in FACE_COUNT_OPTIONS:
 		search_face_count.get_popup().add_item(item[0])
@@ -191,8 +191,8 @@ func _load_categories():
 	var categories = SafeData.array(result, "results")
 	var i = 0
 	for category in categories:
-		search_categories.get_popup().add_check_item(SafeData.string(category, "name"))
-		search_categories.get_popup().set_item_metadata(i + 1, SafeData.string(category, "slug"))
+		search_category.get_popup().add_check_item(SafeData.string(category, "name"))
+		search_category.get_popup().set_item_metadata(i + 1, SafeData.string(category, "slug"))
 		i += 1
 
 func _search():
@@ -201,7 +201,7 @@ func _search():
 
 	paginator.search(
 		search_text.text,
-		search_categories.get_meta("__slugs"),
+		search_category.get_meta("__slug"),
 		search_animated.pressed,
 		search_staff_picked.pressed,
 		search_face_count.get_meta("__data")[1],
@@ -212,49 +212,13 @@ func _search():
 ##### Helpers
 
 func _commit_category(index):
-	var popup = search_categories.get_popup()
-	var checked = !popup.is_item_checked(index)
-	popup.set_item_checked(index, checked)
-	
-	var all = false
-	
-	if index == 0:
-		for i in range(popup.get_item_count()):
-			popup.set_item_checked(i, checked)
-	else:
-		if !checked:
-			popup.set_item_checked(0, false)
-
-	var n = 0
-	var label
-	var some = []
+	var popup = search_category.get_popup()
 	for i in range(popup.get_item_count()):
-		if popup.is_item_checked(i):
-			if i == 0:
-				label = "All"
-				all = true
-				n = -1
-				break
-			if n == 0:
-				label = popup.get_item_text(i)
-				some.append(popup.get_item_metadata(i))
-				n += 1
-			elif n >= 1:
-				label = "<Multiple>"
-				some.append(popup.get_item_metadata(i))
-				n += 1
+		var checked = i == index
+		popup.set_item_checked(i, checked)
 
-	if n == 0:
-		all = true
-	elif n == popup.get_item_count() - 1:
-		popup.set_item_checked(0, true)
-		all = true
-	search_categories.text = "All" if all else label
-	
-	if all:
-		search_categories.set_meta("__slugs", [])
-	else:
-		search_categories.set_meta("__slugs", some)
+	search_category.text = popup.get_item_text(index)
+	search_category.set_meta("__slug", popup.get_item_metadata(index))
 
 func _commit_face_count(index):
 	search_face_count.text = FACE_COUNT_OPTIONS[index][0]

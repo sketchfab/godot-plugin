@@ -32,7 +32,7 @@ anti_aliasing = true
 anti_aliasing_size = 1
 _sections_unfolded = [ "Shadow" ]
 
-[node name="ResultItem" type="PanelContainer" index="0"]
+[node name="ResultItem" type="PanelContainer"]
 
 self_modulate = Color( 1, 1, 1, 0.627451 )
 anchor_left = 0.0
