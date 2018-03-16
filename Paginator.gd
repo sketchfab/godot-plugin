@@ -1,5 +1,6 @@
 extends ScrollContainer
 
+const SafeData = preload("res://SafeData.gd")
 var ResultItem = load("res://ResultItem.tscn")
 
 var api = preload("res://Api.gd").new()
@@ -54,18 +55,13 @@ func _process_page(result):
 	# Collect and check
 	if typeof(result) != TYPE_DICTIONARY:
 		return
-	var results = _safe_get(result, "results")
-	if typeof(results) != TYPE_ARRAY:
-		return
 
 	# Process
+	var results = SafeData.array(result, "results")
 	for result in results:
 		var item = ResultItem.instance()
 		item.set_data(result)
 		grid.add_child(item)
 
 	# Set next page now we know the current one succeeded
-	next_page_url = _safe_get(result, "next")
-
-func _safe_get(result, key):
-	return result[key] if result.has(key) else null
+	next_page_url = SafeData.string(result, "next")

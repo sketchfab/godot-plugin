@@ -13,7 +13,7 @@ func _draw():
 	draw_rect(get_rect(), Color(1.0, 1.0, 1.0))
 "
 
-[node name="Main" type="Control"]
+[node name="Main" type="Control" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
