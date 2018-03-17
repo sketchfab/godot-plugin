@@ -2,6 +2,7 @@ tool
 extends WindowDialog
 
 const SafeData = preload("res://addons/sketchfab/SafeData.gd")
+const Utils = preload("res://addons/sketchfab/Utils.gd")
 
 var api = preload("res://addons/sketchfab/Api.gd").new()
 
@@ -37,9 +38,8 @@ func _on_about_to_show():
 
 	var thumbnails = SafeData.dictionary(data, "thumbnails")
 	var images = SafeData.array(thumbnails, "images")
-	var first_image = SafeData.dictionary(images, 0)
 	image.max_size = image.get_rect().size.x
-	image.url = SafeData.string(first_image, "url")
+	image.url = Utils.get_best_size_url(images, self.image.max_size, SafeData)
 
 	var vc = SafeData.integer(data, "vertexCount")
 	var fc = SafeData.integer(data, "faceCount")

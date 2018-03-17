@@ -2,6 +2,8 @@ tool
 extends MarginContainer
 
 const SafeData = preload("res://addons/sketchfab/SafeData.gd")
+const Utils = preload("res://addons/sketchfab/Utils.gd")
+
 const ModelDialog = preload("res://addons/sketchfab/ModelDialog.tscn")
 
 onready var user_name = find_node("UserName")
@@ -26,17 +28,7 @@ func _ready():
 
 	var thumbnails = SafeData.dictionary(data, "thumbnails")
 	var images = SafeData.array(thumbnails, "images")
-
-	var target = self.image.max_size * self.image.max_size
-	var closest_diff = 10e20
-	var closes_url
-	for img in images:
-		var size = SafeData.integer(img, "width") * SafeData.integer(img, "height")
-		var diff = abs(target - size)
-		if diff < closest_diff:
-			closest_diff = diff
-			closes_url = SafeData.string(img, "url")
-	self.image.url = closes_url
+	image.url = Utils.get_best_size_url(images, self.image.max_size, SafeData)
 
 func _on_Button_pressed():
 	dialog = ModelDialog.instance()
