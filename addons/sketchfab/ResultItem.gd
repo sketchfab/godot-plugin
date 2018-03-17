@@ -1,5 +1,5 @@
 tool
-extends Container
+extends MarginContainer
 
 const SafeData = preload("res://addons/sketchfab/SafeData.gd")
 
@@ -24,11 +24,13 @@ func _ready():
 	var thumbnails = SafeData.dictionary(data, "thumbnails")
 	var images = SafeData.array(thumbnails, "images")
 	
-	var smallest_size = 10e20
-	var smallest_url
+	var target = self.image.max_size * self.image.max_size
+	var closest_diff = 10e20
+	var closes_url
 	for img in images:
 		var size = SafeData.integer(img, "width") * SafeData.integer(img, "height")
-		if size < smallest_size:
-			smallest_size = size
-			smallest_url = SafeData.string(img, "url")
-	self.image.url = smallest_url
+		var diff = abs(target - size)
+		if diff < closest_diff:
+			closest_diff = diff
+			closes_url = SafeData.string(img, "url")
+	self.image.url = closes_url

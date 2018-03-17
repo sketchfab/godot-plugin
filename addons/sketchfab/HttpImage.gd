@@ -4,6 +4,8 @@ extends Control
 const MAX_COUNT = 4
 
 export var max_size = 256
+export var background = Color(0, 0, 0, 0)
+export var immediate = false
 
 var url setget _set_url
 var url_to_load
@@ -31,12 +33,14 @@ func _exit_tree():
 		busy = false
 	
 func _draw():
+	var rect = Rect2(0, 0, get_rect().size.x, get_rect().size.y)	
+	draw_rect(rect, background)
+
 	if !texture:
 		return
 
 	var tw = texture.get_width()
 	var th = texture.get_height()
-	var rect = Rect2(0, 0, get_rect().size.x, get_rect().size.y)	
 	
 	if float(tw) / th > rect.size.x / rect.size.y:
 		var old = rect.size.y
@@ -68,7 +72,7 @@ func _start_load():
 		if !is_inside_tree():
 			return
 		var count = get_tree().get_meta("__http_image_count")
-		if count < MAX_COUNT:
+		if immediate || count < MAX_COUNT:
 			get_tree().set_meta("__http_image_count", count + 1)
 			break
 		else:
