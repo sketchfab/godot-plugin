@@ -128,24 +128,46 @@ func _on_Download_pressed():
 	var file_regex = RegEx.new()
 	file_regex.compile("[^/]+?\\.zip")
 	var filename = file_regex.search(url).get_string()
+	var zip_path = "res://sketchfab/%s" % filename
 
 	downloader.connect("download_progressed", self, "_on_download_progressed")
-	downloader.request(path, null, { "download_to": "res://sketchfab/%s" % filename })
+	downloader.request(path, null, { "download_to": zip_path })
 	result = yield(downloader, "completed")
+	if !result:
+		return
 	downloader.term()
 	downloader = null
 
-	download.visible = true
-	progress.visible = false
-	size_label.visible = false
-	if result:
-		if result.ok && result.code == 200:
-			download.text = "Model downloaded!"
-			download.disabled = true
-		else:
-			OS.alert(
-				"Please check your network connectivity, free disk space and try again.",
-				"Download error")
+	if !result.ok || result.code != 200:
+		download.visible = true
+		progress.visible = false
+		size_label.visible = false
+		OS.alert(
+			"Please check your network connectivity, free disk space and try again.",
+			"Download error")
+		return
+
+	# Unpack
+
+	progress.percent_visible = false
+	size_label.text = "    Model downloaded! Unpacking..."
+	yield(get_tree(), "idle_frame")
+	if !get_tree():
+		return
+
+	var out = []
+	OS.execute(OS.get_executable_path(), [
+		"-s", ProjectSettings.globalize_path("res://addons/sketchfab/unzip.gd"),
+		"--zip-to-unpack %s" % ProjectSettings.globalize_path(zip_path),
+		"--no-window",
+		"--quit",
+	], true, out)
+	print(out)
+
+	size_label.text = "    Model unpacked into project!"
+
+	# Trigger import
+	get_tree().get_meta("__editor_interface").get_resource_filesystem().scan()
 
 func _on_download_progressed(bytes, total_bytes):
 	if !get_tree():

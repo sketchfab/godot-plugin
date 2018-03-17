@@ -6,6 +6,7 @@ const Utils = preload("res://addons/sketchfab/Utils.gd")
 var main = preload("res://addons/sketchfab/Main.tscn").instance()
 
 func _enter_tree():
+	get_tree().set_meta("__editor_interface", get_editor_interface())
 	get_editor_interface().get_editor_viewport().add_child(main)
 	main.visible = false
 
