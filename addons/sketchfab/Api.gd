@@ -83,6 +83,15 @@ func get_model_detail(uid):
 	busy = false
 
 	return _handle_result(result)
+	
+func request_download(uid):
+	busy = true
+	requestor.request("%s/models/%s/download" % [BASE_PATH, uid], null, { "token": get_token() })
+
+	var result = yield(requestor, "completed")
+	busy = false
+
+	return _handle_result(result)
 
 func search_models(q, categories, animated, staff_picked, min_face_count, max_face_count, sort_by):
 	var query = {
