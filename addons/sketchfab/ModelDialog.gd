@@ -24,17 +24,17 @@ func _on_about_to_show():
 	if !uid:
 		hide()
 		return
-	
+
 	var data = yield(api.get_model_detail(uid), "completed")
 	if typeof(data) != TYPE_DICTIONARY:
 		hide()
 		return
 
 	label_model.text = SafeData.string(data, "name")
-	
+
 	var user = SafeData.dictionary(data, "user")
 	label_user.text = "by %s" % SafeData.string(user, "displayName")
-	
+
 	var thumbnails = SafeData.dictionary(data, "thumbnails")
 	var images = SafeData.array(thumbnails, "images")
 	var first_image = SafeData.dictionary(images, 0)
@@ -58,5 +58,5 @@ func _on_about_to_show():
 		SafeData.string(license_data, "fullName"),
 		SafeData.string(license_data, "requirements"),
 	]
-	
+
 	$All.visible = true

@@ -18,15 +18,15 @@ func set_data(data):
 func _ready():
 	if !data:
 		return
-	
+
 	model_name.text = SafeData.string(data, "name")
-	
+
 	var user = SafeData.dictionary(data, "user")
 	user_name.text = "by %s" % SafeData.string(user, "displayName")
-	
+
 	var thumbnails = SafeData.dictionary(data, "thumbnails")
 	var images = SafeData.array(thumbnails, "images")
-	
+
 	var target = self.image.max_size * self.image.max_size
 	var closest_diff = 10e20
 	var closes_url

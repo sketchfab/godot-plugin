@@ -17,7 +17,7 @@ var texture
 
 func _enter_tree():
 	if !get_tree().has_meta("__http_image_count"):
-		get_tree().set_meta("__http_image_count", 0)	
+		get_tree().set_meta("__http_image_count", 0)
 
 	if !http.get_parent():
 		add_child(http)
@@ -25,15 +25,15 @@ func _enter_tree():
 	busy = false
 	if url_to_load:
 		_start_load()
-		
+
 func _exit_tree():
 	if busy:
 		http.cancel_request()
 		get_tree().set_meta("__http_image_count", get_tree().get_meta("__http_image_count") - 1)
 		busy = false
-	
+
 func _draw():
-	var rect = Rect2(0, 0, get_rect().size.x, get_rect().size.y)	
+	var rect = Rect2(0, 0, get_rect().size.x, get_rect().size.y)
 	draw_rect(rect, background)
 
 	if !texture:
@@ -41,7 +41,7 @@ func _draw():
 
 	var tw = texture.get_width()
 	var th = texture.get_height()
-	
+
 	if float(tw) / th > rect.size.x / rect.size.y:
 		var old = rect.size.y
 		rect.size.y = rect.size.x * float(th) / tw
@@ -51,15 +51,15 @@ func _draw():
 		rect.size.x = rect.size.y * float(tw) / th
 		rect.position.x += 0.5 * (old - rect.size.x)
 
-	draw_texture_rect(texture, rect, false) 
-	
+	draw_texture_rect(texture, rect, false)
+
 func _set_url(url):
 	url_to_load = url
 	if !is_inside_tree():
 		return
 
 	_start_load()
-	
+
 func _start_load():
 	http.cancel_request()
 	texture = null
@@ -80,7 +80,7 @@ func _start_load():
 
 	_load(url_to_load)
 	url_to_load = null
-	
+
 func _load(url_to_load):
 	http.request(url_to_load, [], false)
 
@@ -89,7 +89,7 @@ func _load(url_to_load):
 
 	busy = false
 	get_tree().set_meta("__http_image_count", get_tree().get_meta("__http_image_count") - 1)
-	
+
 	var result = data[0]
 	var code = data[1]
 	var headers = data[2]

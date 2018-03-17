@@ -23,6 +23,8 @@ const DEFAULT_OPTIONS = {
 	"token": null,
 }
 
+var has_enhanced_qs_from_dict
+
 var hostname
 var use_ssl
 
@@ -34,6 +36,8 @@ var terminated = false
 func _init(hostname, use_ssl):
 	self.hostname = hostname
 	self.use_ssl = use_ssl
+
+	has_enhanced_qs_from_dict = http.query_string_from_dict({"a": null}) == "a"
 
 func cancel():
 	if busy:
@@ -108,13 +112,13 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 	if payload:
 		var encoding = _get_option(options, "encoding")
 		if encoding == "query":
-			uri += "?" + http.query_string_from_dict(payload)
+			uri += "?" + _dict_to_query_string(payload)
 		elif encoding == "json":
 			headers.append("Content-Type: application/json")
 			encoded_payload = to_json(payload)
 		elif encoding == "form":
 			headers.append("Content-Type: application/x-www-form-urlencoded")
-			encoded_payload = http.query_string_from_dict(payload)
+			encoded_payload = _dict_to_query_string(payload)
 
 	var token = _get_option(options, "token")
 	if token:
@@ -210,3 +214,19 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 
 func _get_option(options, key):
 	return options[key] if options.has(key) else DEFAULT_OPTIONS[key]
+
+func _dict_to_query_string(dictionary):
+	if has_enhanced_qs_from_dict:
+		return http.query_string_from_dict(dictionary)
+
+	# For 3.0
+	var qs = ""
+	for key in dictionary:
+		var value = dictionary[key]
+		if typeof(value) == TYPE_ARRAY:
+			for v in value:
+				qs += "&%s=%s" % [key.percent_encode(), v.percent_encode()]
+		else:
+			qs += "&%s=%s" % [key.percent_encode(), String(value).percent_encode()]
+	qs.erase(0, 1)
+	return qs
