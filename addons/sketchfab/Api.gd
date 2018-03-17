@@ -1,3 +1,4 @@
+tool
 extends Object
 
 const OAUTH_HOSTNAME = "sketchfab.com"
@@ -6,13 +7,17 @@ const USE_SSL = true
 const BASE_PATH = "/v3"
 const CLIENT_ID = "IUO8d5VVOIUCzWQArQ3VuXfbwx5QekZfLeDlpOmW"
 
+enum SymbolicErrors {
+	NOT_AUTHORIZED,
+}
+
 static func get_token():
 	return ProjectSettings.get_meta("__sketchfab_token")
-	
+
 static func set_token(token):
 	ProjectSettings.set_meta("__sketchfab_token", token)
 
-const Requestor = preload("res://Requestor.gd")
+const Requestor = preload("res://addons/sketchfab/Requestor.gd")
 var Result = Requestor.Result
 
 var requestor = Requestor.new(API_HOSTNAME, USE_SSL)
@@ -20,7 +25,7 @@ var busy = false
 
 func term():
 	requestor.term()
-	
+
 func cancel():
 	yield(requestor.cancel(), "completed")
 
@@ -49,7 +54,7 @@ func login(username, password):
 	else:
 		set_token(null)
 		return null
-		
+
 func get_my_info():
 	busy = true
 	requestor.request("%s/me" % BASE_PATH, null, { "token": get_token() })
@@ -58,25 +63,57 @@ func get_my_info():
 
 	return _handle_result(result)
 
-func search_models(q):
-	var query = {}
-
+func get_categories():
 	busy = true
-	if q.empty():
-		requestor.request("%s/models" % BASE_PATH, query, { "token": get_token() })
-	else:
-		query.q = q
-		requestor.request("%s/search?type=models" % BASE_PATH, query, { "token": get_token() })
+	requestor.request("%s/categories" % BASE_PATH, null, { "token": get_token() })
 
 	var result = yield(requestor, "completed")
 	busy = false
 
 	return _handle_result(result)
-	
+
+func get_model_detail(uid):
+	busy = true
+	requestor.request("%s/models/%s" % [BASE_PATH, uid], null, { "token": get_token() })
+
+	var result = yield(requestor, "completed")
+	busy = false
+
+	return _handle_result(result)
+
+func search_models(q, categories, animated, staff_picked, min_face_count, max_face_count, sort_by):
+	var query = {
+		"type": "models",
+		"downloadable": "true",
+	}
+
+	if q:
+		query.q = q
+	if categories:
+		query.categories = categories
+	if animated:
+		query.animated = "true"
+	if staff_picked:
+		query.staffpicked = "true"
+	if min_face_count:
+		query.min_face_count = min_face_count
+	if max_face_count:
+		query.max_face_count = max_face_count
+	if sort_by:
+		query.sort_by = sort_by
+
+	busy = true
+	requestor.request("%s/search" % BASE_PATH, query, { "token": get_token() })
+
+	var result = yield(requestor, "completed")
+	busy = false
+
+	return _handle_result(result)
+
 func fetch_next_page(url):
 	# Strip protocol + domain
 	var uri = url.right(url.find(API_HOSTNAME) + API_HOSTNAME.length())
-	
+
 	busy = true
 	requestor.request(uri, null, { "token": get_token() })
 
@@ -84,22 +121,21 @@ func fetch_next_page(url):
 	busy = false
 
 	return _handle_result(result)
-	
+
 func _handle_result(result):
 	# Request canceled
 	if !result:
 		return null
-		
+
 	# General connectivity error
 	if !result.ok:
 		OS.alert('Network operation failed. Try again later.', 'Error')
 		return null
 
-	# HTTP error		
+	# HTTP error
 	var kind = result.code / 100
 	if kind == 4:
-		OS.alert('Not authorized. Please login.', 'Error')
-		return null
+		return NOT_AUTHORIZED
 	elif kind == 5:
 		OS.alert('Server error. Try again later.', 'Error')
 		return null
