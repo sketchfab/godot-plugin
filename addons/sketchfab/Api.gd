@@ -72,6 +72,15 @@ func get_categories():
 
 	return _handle_result(result)
 
+func get_model_detail(uid):
+	busy = true
+	requestor.request("%s/models/%s" % [BASE_PATH, uid], null, { "token": get_token() })
+
+	var result = yield(requestor, "completed")
+	busy = false
+
+	return _handle_result(result)
+
 func search_models(q, category, animated, staff_picked, min_face_count, max_face_count, sort_by):
 	var query = {
 		"type": "models",
