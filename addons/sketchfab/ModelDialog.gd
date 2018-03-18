@@ -32,15 +32,15 @@ func _on_about_to_show():
 	if !uid:
 		hide()
 		return
-		
+
 	# Setup download button
-	
+
 	if Api.get_token():
 		download.text = "Download"
 	else:
 		download.text = "You must be logged in order to download models."
 		download.disabled = true
-		
+
 	# Populate information
 
 	var data = yield(api.get_model_detail(uid), "completed")
@@ -80,22 +80,22 @@ func _on_about_to_show():
 
 func _on_Download_pressed():
 	# Request download link
-	
+
 	download.disabled = true
 
 	var result = yield(api.request_download(uid), "completed")
 	if !get_tree():
 		return
-		
+
 	download.disabled = false
-	
+
 	if typeof(result) == TYPE_INT && result == Api.NOT_AUTHORIZED:
 		OS.alert("Your session may have expired. Please log in again.", "Not authorized")
 		return
-	
+
 	if typeof(result) != TYPE_DICTIONARY:
 		return
-	
+
 	var gtlf = SafeData.dictionary(result, "gltf")
 	if !gtlf.size():
 		OS.alert("This model has not a glTF version.", "Sorry")
@@ -105,25 +105,25 @@ func _on_Download_pressed():
 	var size = SafeData.integer(gtlf, "size")
 	if !url:
 		return
-		
+
 	# Download file
-	
-	download.visible = false	
+
+	download.visible = false
 	progress.value = 0
 	progress.max_value = size
 	progress.visible = true
 	size_label.visible = true
 	size_label.text = "    %.1f MiB" % (size / (1024 * 1024))
-	
+
 	var host_idx = url.find("//") + 2
 	var path_idx = url.find("/", host_idx)
 	var host = url.substr(host_idx, path_idx - host_idx)
 	var path = url.right(path_idx)
 
 	downloader = Requestor.new(host, true)
-	
+
 	var dir = Directory.new()
-	dir.make_dir("res://sketchfab")	
+	dir.make_dir("res://sketchfab")
 
 	var file_regex = RegEx.new()
 	file_regex.compile("[^/]+?\\.zip")
@@ -131,7 +131,7 @@ func _on_Download_pressed():
 
 	downloader.connect("download_progressed", self, "_on_download_progressed")
 	downloader.request(path, null, { "download_to": "res://sketchfab/%s" % filename })
-	result = yield(downloader, "completed")		
+	result = yield(downloader, "completed")
 	downloader.term()
 	downloader = null
 

@@ -83,7 +83,7 @@ func get_model_detail(uid):
 	busy = false
 
 	return _handle_result(result)
-	
+
 func request_download(uid):
 	busy = true
 	requestor.request("%s/models/%s/download" % [BASE_PATH, uid], null, { "token": get_token() })

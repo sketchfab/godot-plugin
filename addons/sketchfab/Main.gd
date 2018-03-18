@@ -22,6 +22,7 @@ const SORT_BY_OPTIONS = [
 const SORT_BY_DEFAULT_INDEX = 1
 
 const SafeData = preload("res://addons/sketchfab/SafeData.gd")
+const Utils = preload("res://addons/sketchfab/Utils.gd")
 const Api = preload("res://addons/sketchfab/Api.gd")
 var api = Api.new()
 
@@ -51,6 +52,9 @@ var must_start_up = true
 func _enter_tree():
 	cfg = ConfigFile.new()
 	cfg.load(CONFIG_FILE_PATH)
+
+	find_node("Logo").texture = (
+		Utils.create_texture_from_file("res://addons/sketchfab/sketchfab.png.noimport"))
 
 func _exit_tree():
 	cfg.save(CONFIG_FILE_PATH)
