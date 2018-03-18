@@ -77,68 +77,90 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 		emit_signal("completed", null)
 		return
 
-	if http.get_status() != HTTPClient.STATUS_CONNECTED:
-		http.connect_to_host(hostname, -1, use_ssl, false)
-		while true:
-			yield(Engine.get_main_loop(), "idle_frame")
-			if terminated:
-				if LOG_LEVEL >= 2:
-					print("TERMINATE HONORED")
-				return
+	var reconnect_tries = 3
+	while reconnect_tries:
+		http.poll()
+		if http.get_status() != HTTPClient.STATUS_CONNECTED:
+			http.connect_to_host(hostname, -1, use_ssl, false)
+			while true:
+				yield(Engine.get_main_loop(), "idle_frame")
+				if terminated:
+					if LOG_LEVEL >= 2:
+						print("TERMINATE HONORED")
+					return
 
-			http.poll()
-			status = http.get_status()
-			if status in [
-				HTTPClient.STATUS_CANT_CONNECT,
-			    HTTPClient.STATUS_CANT_RESOLVE,
-				HTTPClient.STATUS_SSL_HANDSHAKE_ERROR,
-			]:
-				busy = false
-				emit_signal("completed", Result.new(-1))
-				return
+				http.poll()
+				status = http.get_status()
+				if status in [
+					HTTPClient.STATUS_CANT_CONNECT,
+				    HTTPClient.STATUS_CANT_RESOLVE,
+					HTTPClient.STATUS_SSL_HANDSHAKE_ERROR,
+				]:
+					busy = false
+					emit_signal("completed", Result.new(-1))
+					return
 
-			if status == HTTPClient.STATUS_CONNECTED:
-				break
+				if status == HTTPClient.STATUS_CONNECTED:
+					break
 
-	if canceled:
+		if canceled:
+			if LOG_LEVEL >= 2:
+				print("CANCEL HONORED (SOFT)")
+			canceled = false
+			busy = false
+			emit_signal("completed", null)
+			return
+
+		var uri = path
+		var encoded_payload = ""
+		var headers = []
+
+		if payload:
+			var encoding = _get_option(options, "encoding")
+			if encoding == "query":
+				uri += "?" + _dict_to_query_string(payload)
+			elif encoding == "json":
+				headers.append("Content-Type: application/json")
+				encoded_payload = to_json(payload)
+			elif encoding == "form":
+				headers.append("Content-Type: application/x-www-form-urlencoded")
+				encoded_payload = _dict_to_query_string(payload)
+
+		var token = _get_option(options, "token")
+		if token:
+			headers.append("Authorization: Bearer %s" % token)
+
+		if LOG_LEVEL >= 1:
+			print("QUERY")
+			print("URI: %s" % uri)
+			if LOG_LEVEL >= 2:
+				if headers.size():
+					print("Headers:")
+					print(headers)
+				if encoded_payload:
+					print("Payload:")
+					print(encoded_payload)
+
+		http.request(_get_option(options, "method"), uri, headers, encoded_payload)
+		http.poll()
+		if http.get_status() in [
+			HTTPClient.STATUS_CONNECTED,
+			HTTPClient.STATUS_BODY,
+			HTTPClient.STATUS_REQUESTING,
+		]:
+			# The connection seems to be alive
+			break
+
+		reconnect_tries -= 1
+		http.close()
+
 		if LOG_LEVEL >= 2:
-			print("CANCEL HONORED (SOFT)")
-		canceled = false
-		busy = false
-		emit_signal("completed", null)
-		return
+			print("CONNECTION DOWN. TRIES LEFT: %d" % reconnect_tries)
 
-	var uri = path
-	var encoded_payload = ""
-	var headers = []
+		if reconnect_tries == 0:
+			# An error state is active; let it fail
+			pass
 
-	if payload:
-		var encoding = _get_option(options, "encoding")
-		if encoding == "query":
-			uri += "?" + _dict_to_query_string(payload)
-		elif encoding == "json":
-			headers.append("Content-Type: application/json")
-			encoded_payload = to_json(payload)
-		elif encoding == "form":
-			headers.append("Content-Type: application/x-www-form-urlencoded")
-			encoded_payload = _dict_to_query_string(payload)
-
-	var token = _get_option(options, "token")
-	if token:
-		headers.append("Authorization: Bearer %s" % token)
-
-	if LOG_LEVEL >= 1:
-		print("QUERY")
-		print("URI: %s" % uri)
-		if LOG_LEVEL >= 2:
-			if headers.size():
-				print("Headers:")
-				print(headers)
-			if encoded_payload:
-				print("Payload:")
-				print(encoded_payload)
-
-	http.request(_get_option(options, "method"), uri, headers, encoded_payload)
 	while true:
 		yield(Engine.get_main_loop(), "idle_frame")
 		if terminated:
