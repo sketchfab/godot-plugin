@@ -3,8 +3,11 @@ extends WindowDialog
 
 const SafeData = preload("res://addons/sketchfab/SafeData.gd")
 const Utils = preload("res://addons/sketchfab/Utils.gd")
+const Requestor = preload("res://addons/sketchfab/Requestor.gd")
+const Api = preload("res://addons/sketchfab/Api.gd")
 
-var api = preload("res://addons/sketchfab/Api.gd").new()
+var api = Api.new()
+var downloader
 
 onready var label_model = find_node("Model")
 onready var label_user = find_node("User")
@@ -13,7 +16,12 @@ onready var image = find_node("Image")
 onready var info = find_node("Info")
 onready var license = find_node("License")
 
+onready var download = find_node("Download")
+onready var progress = find_node("ProgressBar")
+onready var size_label = find_node("Size")
+
 var uid
+var imported_path
 
 func set_uid(uid):
 	self.uid = uid
@@ -25,6 +33,16 @@ func _on_about_to_show():
 	if !uid:
 		hide()
 		return
+
+	# Setup download button
+
+	if Api.get_token():
+		download.text = "Download"
+	else:
+		download.text = "You must be logged in order to download models."
+		download.disabled = true
+
+	# Populate information
 
 	var data = yield(api.get_model_detail(uid), "completed")
 	if typeof(data) != TYPE_DICTIONARY:
@@ -60,3 +78,120 @@ func _on_about_to_show():
 	]
 
 	$All.visible = true
+
+func _on_Download_pressed():
+	if imported_path:
+		var ei = get_tree().get_meta("__editor_interface")
+		ei.open_scene_from_path(imported_path)
+		hide()
+		return
+
+	# Request download link
+
+	download.disabled = true
+
+	var result = yield(api.request_download(uid), "completed")
+	if !get_tree():
+		return
+
+	download.disabled = false
+
+	if typeof(result) == TYPE_INT && result == Api.NOT_AUTHORIZED:
+		OS.alert("Your session may have expired. Please log in again.", "Not authorized")
+		return
+
+	if typeof(result) != TYPE_DICTIONARY:
+		return
+
+	var gtlf = SafeData.dictionary(result, "gltf")
+	if !gtlf.size():
+		OS.alert("This model has not a glTF version.", "Sorry")
+		return
+
+	var url = SafeData.string(gtlf, "url")
+	var size = SafeData.integer(gtlf, "size")
+	if !url:
+		return
+
+	# Download file
+
+	download.visible = false
+	progress.value = 0
+	progress.max_value = size
+	progress.visible = true
+	size_label.visible = true
+	size_label.text = "    %.1f MiB" % (size / (1024 * 1024))
+
+	var host_idx = url.find("//") + 2
+	var path_idx = url.find("/", host_idx)
+	var host = url.substr(host_idx, path_idx - host_idx)
+	var path = url.right(path_idx)
+
+	downloader = Requestor.new(host, true)
+
+	var dir = Directory.new()
+	dir.make_dir("res://sketchfab")
+
+	var file_regex = RegEx.new()
+	file_regex.compile("[^/]+?\\.zip")
+	var filename = file_regex.search(url).get_string()
+	var zip_path = "res://sketchfab/%s" % filename
+
+	downloader.connect("download_progressed", self, "_on_download_progressed")
+	downloader.request(path, null, { "download_to": zip_path })
+	result = yield(downloader, "completed")
+	if !result:
+		return
+	downloader.term()
+	downloader = null
+
+	if !result.ok || result.code != 200:
+		download.visible = true
+		progress.visible = false
+		size_label.visible = false
+		OS.alert(
+			"Please check your network connectivity, free disk space and try again.",
+			"Download error")
+		return
+
+	# Unpack
+
+	progress.percent_visible = false
+	size_label.text = "    Model downloaded! Unpacking..."
+	yield(get_tree(), "idle_frame")
+	if !get_tree():
+		return
+
+	var out = []
+	OS.execute(OS.get_executable_path(), [
+		"-s", ProjectSettings.globalize_path("res://addons/sketchfab/unzip.gd"),
+		"--zip-to-unpack %s" % ProjectSettings.globalize_path(zip_path),
+		"--no-window",
+		"--quit",
+	], true, out)
+	print(out)
+
+	size_label.text = "    Model unpacked into project!"
+
+	# Import and open
+
+	var base_name = filename.substr(0, filename.find(".zip"))
+	imported_path = "res://sketchfab/%s/scene.gltf" % base_name
+	var ei = get_tree().get_meta("__editor_interface")
+	ei.get_resource_filesystem().scan()
+	while ei.get_resource_filesystem().is_scanning():
+		yield(get_tree(), "idle_frame")
+		if !get_tree():
+			return
+	ei.select_file(imported_path)
+
+	progress.visible = false
+	size_label.visible = false
+	download.visible = true
+	download.text = "OPEN IMPORTED MODEL"
+	download.uppercase = true
+
+func _on_download_progressed(bytes, total_bytes):
+	if !get_tree():
+		downloader.term()
+	progress.value = bytes

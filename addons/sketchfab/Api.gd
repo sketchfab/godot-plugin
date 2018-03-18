@@ -12,10 +12,13 @@ enum SymbolicErrors {
 }
 
 static func get_token():
-	return ProjectSettings.get_meta("__sketchfab_token")
+	if Engine.get_main_loop().has_meta("__sketchfab_token"):
+		return Engine.get_main_loop().get_meta("__sketchfab_token")
+	else:
+		return null
 
 static func set_token(token):
-	ProjectSettings.set_meta("__sketchfab_token", token)
+	Engine.get_main_loop().set_meta("__sketchfab_token", token)
 
 const Requestor = preload("res://addons/sketchfab/Requestor.gd")
 var Result = Requestor.Result
@@ -65,7 +68,7 @@ func get_my_info():
 
 func get_categories():
 	busy = true
-	requestor.request("%s/categories" % BASE_PATH, null, { "token": get_token() })
+	requestor.request("%s/categories" % BASE_PATH)
 
 	var result = yield(requestor, "completed")
 	busy = false
@@ -74,7 +77,16 @@ func get_categories():
 
 func get_model_detail(uid):
 	busy = true
-	requestor.request("%s/models/%s" % [BASE_PATH, uid], null, { "token": get_token() })
+	requestor.request("%s/models/%s" % [BASE_PATH, uid])
+
+	var result = yield(requestor, "completed")
+	busy = false
+
+	return _handle_result(result)
+
+func request_download(uid):
+	busy = true
+	requestor.request("%s/models/%s/download" % [BASE_PATH, uid], null, { "token": get_token() })
 
 	var result = yield(requestor, "completed")
 	busy = false
@@ -103,7 +115,7 @@ func search_models(q, categories, animated, staff_picked, min_face_count, max_fa
 		query.sort_by = sort_by
 
 	busy = true
-	requestor.request("%s/search" % BASE_PATH, query, { "token": get_token() })
+	requestor.request("%s/search" % BASE_PATH, query)
 
 	var result = yield(requestor, "completed")
 	busy = false
@@ -115,7 +127,7 @@ func fetch_next_page(url):
 	var uri = url.right(url.find(API_HOSTNAME) + API_HOSTNAME.length())
 
 	busy = true
-	requestor.request(uri, null, { "token": get_token() })
+	requestor.request(uri)
 
 	var result = yield(requestor, "completed")
 	busy = false
