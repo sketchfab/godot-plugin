@@ -21,6 +21,7 @@ onready var progress = find_node("ProgressBar")
 onready var size_label = find_node("Size")
 
 var uid
+var imported_path
 
 func set_uid(uid):
 	self.uid = uid
@@ -79,6 +80,12 @@ func _on_about_to_show():
 	$All.visible = true
 
 func _on_Download_pressed():
+	if imported_path:
+		var ei = get_tree().get_meta("__editor_interface")
+		ei.open_scene_from_path(imported_path)
+		hide()
+		return
+
 	# Request download link
 
 	download.disabled = true
@@ -166,8 +173,23 @@ func _on_Download_pressed():
 
 	size_label.text = "    Model unpacked into project!"
 
-	# Trigger import
-	get_tree().get_meta("__editor_interface").get_resource_filesystem().scan()
+	# Import and open
+
+	var base_name = filename.substr(0, filename.find(".zip"))
+	imported_path = "res://sketchfab/%s/scene.gltf" % base_name
+	var ei = get_tree().get_meta("__editor_interface")
+	ei.get_resource_filesystem().scan()
+	while ei.get_resource_filesystem().is_scanning():
+		yield(get_tree(), "idle_frame")
+		if !get_tree():
+			return
+	ei.select_file(imported_path)
+
+	progress.visible = false
+	size_label.visible = false
+	download.visible = true
+	download.text = "OPEN IMPORTED MODEL"
+	download.uppercase = true
 
 func _on_download_progressed(bytes, total_bytes):
 	if !get_tree():
