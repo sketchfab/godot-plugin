@@ -912,7 +912,11 @@ max_lines_visible = -1
 
 [connection signal="pressed" from="Header/_/Logged/_/_/Logout" to="." method="_on_Logout_pressed"]
 
+[connection signal="text_changed" from="Header/_/NotLogged/UserName" to="." method="_on_any_login_text_changed"]
+
 [connection signal="text_entered" from="Header/_/NotLogged/UserName" to="." method="_on_UserName_text_entered"]
+
+[connection signal="text_changed" from="Header/_/NotLogged/Password" to="." method="_on_any_login_text_changed"]
 
 [connection signal="text_entered" from="Header/_/NotLogged/Password" to="." method="_on_Password_text_entered"]
 

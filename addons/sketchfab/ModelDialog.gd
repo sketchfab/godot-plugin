@@ -189,7 +189,6 @@ func _on_Download_pressed():
 	size_label.visible = false
 	download.visible = true
 	download.text = "OPEN IMPORTED MODEL"
-	download.uppercase = true
 
 func _on_download_progressed(bytes, total_bytes):
 	if !get_tree():
