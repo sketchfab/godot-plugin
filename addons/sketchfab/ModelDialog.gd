@@ -39,7 +39,7 @@ func _on_about_to_show():
 	if Api.get_token():
 		download.text = "Download"
 	else:
-		download.text = "You must be logged in order to download models."
+		download.text = "To download models you need to be logged in."
 		download.disabled = true
 
 	# Populate information
