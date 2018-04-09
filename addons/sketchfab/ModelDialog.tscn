@@ -10,7 +10,7 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 631.0
-margin_bottom = 598.0
+margin_bottom = 542.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -21,7 +21,7 @@ popup_exclusive = false
 window_title = "Model detail"
 resizable = false
 script = ExtResource( 1 )
-_sections_unfolded = [ "Popup", "Size Flags", "Theme", "custom_constants" ]
+_sections_unfolded = [ "Popup", "Rect", "Size Flags", "Theme", "custom_constants" ]
 
 [node name="All" type="VBoxContainer" parent="." index="1"]
 
@@ -29,6 +29,7 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_bottom = -10.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 1
@@ -246,7 +247,7 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 370.0
 margin_right = 631.0
-margin_bottom = 598.0
+margin_bottom = 532.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -268,7 +269,7 @@ anchor_bottom = 0.0
 margin_left = 8.0
 margin_top = 20.0
 margin_right = 623.0
-margin_bottom = 228.0
+margin_bottom = 162.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 1
@@ -331,7 +332,7 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 26.0
 margin_right = 305.0
-margin_bottom = 159.0
+margin_bottom = 142.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 2
@@ -356,22 +357,21 @@ anchor_bottom = 0.0
 margin_left = 309.0
 margin_top = 26.0
 margin_right = 614.0
-margin_bottom = 159.0
+margin_bottom = 142.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 3
-size_flags_vertical = 1
+size_flags_vertical = 3
 text = "License
-License
-License
 License
 License
 License
 License
 License"
 autowrap = true
+clip_text = true
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1

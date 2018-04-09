@@ -146,7 +146,7 @@ custom_constants/separation = 8
 alignment = 0
 _sections_unfolded = [ "Rect", "Size Flags", "custom_constants" ]
 
-[node name="_" type="VBoxContainer" parent="Header/_/Logged/_" index="0"]
+[node name="MainBlock" type="VBoxContainer" parent="Header/_/Logged/_" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -164,7 +164,7 @@ size_flags_vertical = 5
 alignment = 0
 _sections_unfolded = [ "Rect", "Size Flags", "custom_constants" ]
 
-[node name="UserName" type="Label" parent="Header/_/Logged/_/_" index="0"]
+[node name="UserName" type="Label" parent="Header/_/Logged/_/MainBlock" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -184,7 +184,7 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="Plan" type="Label" parent="Header/_/Logged/_/_" index="1"]
+[node name="Plan" type="Label" parent="Header/_/Logged/_/MainBlock" index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -205,7 +205,7 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="Logout" type="Button" parent="Header/_/Logged/_/_" index="2"]
+[node name="Logout" type="Button" parent="Header/_/Logged/_/MainBlock" index="2"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -910,7 +910,7 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[connection signal="pressed" from="Header/_/Logged/_/_/Logout" to="." method="_on_Logout_pressed"]
+[connection signal="pressed" from="Header/_/Logged/_/MainBlock/Logout" to="." method="_on_Logout_pressed"]
 
 [connection signal="text_changed" from="Header/_/NotLogged/UserName" to="." method="_on_any_login_text_changed"]
 
