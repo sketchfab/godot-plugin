@@ -22,6 +22,7 @@ onready var size_label = find_node("Size")
 
 var uid
 var imported_path
+var view_url
 
 func set_uid(uid):
 	self.uid = uid
@@ -56,6 +57,8 @@ func _on_about_to_show():
 
 	var user = SafeData.dictionary(data, "user")
 	label_user.text = "by %s" % SafeData.string(user, "displayName")
+
+	view_url = SafeData.string(data, "viewerUrl")
 
 	var thumbnails = SafeData.dictionary(data, "thumbnails")
 	var images = SafeData.array(thumbnails, "images")
@@ -197,3 +200,6 @@ func _on_download_progressed(bytes, total_bytes):
 	if !get_tree():
 		downloader.term()
 	progress.value = bytes
+
+func _on_ViewOnSite_pressed():
+	OS.shell_open(view_url)
