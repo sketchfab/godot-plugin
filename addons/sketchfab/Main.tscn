@@ -36,8 +36,7 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 1024.0
-margin_bottom = 140.0
-rect_min_size = Vector2( 0, 140 )
+margin_bottom = 90.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -60,7 +59,7 @@ anchor_bottom = 0.0
 margin_left = 10.0
 margin_top = 8.0
 margin_right = 1014.0
-margin_bottom = 134.0
+margin_bottom = 84.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 1
@@ -75,8 +74,8 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 63.0
-margin_bottom = 63.0
+margin_top = 38.0
+margin_bottom = 38.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 1
@@ -92,10 +91,10 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 648.0
-margin_top = 22.0
+margin_left = 664.0
+margin_top = 5.0
 margin_right = 860.0
-margin_bottom = 104.0
+margin_bottom = 71.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 1
@@ -111,7 +110,7 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_right = 212.0
+margin_right = 196.0
 margin_bottom = 14.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -120,7 +119,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
 custom_colors/font_color = Color( 0.4, 0.4, 0.4, 1 )
-text = "Logged as"
+text = "Logged in as"
 align = 1
 percent_visible = 1.0
 lines_skipped = 0
@@ -134,8 +133,8 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 18.0
-margin_right = 212.0
-margin_bottom = 82.0
+margin_right = 196.0
+margin_bottom = 66.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 1
@@ -146,14 +145,14 @@ custom_constants/separation = 8
 alignment = 0
 _sections_unfolded = [ "Rect", "Size Flags", "custom_constants" ]
 
-[node name="_" type="VBoxContainer" parent="Header/_/Logged/_" index="0"]
+[node name="MainBlock" type="VBoxContainer" parent="Header/_/Logged/_" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 140.0
-margin_bottom = 64.0
+margin_bottom = 48.0
 rect_min_size = Vector2( 140, 0 )
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -164,7 +163,7 @@ size_flags_vertical = 5
 alignment = 0
 _sections_unfolded = [ "Rect", "Size Flags", "custom_constants" ]
 
-[node name="UserName" type="Label" parent="Header/_/Logged/_/_" index="0"]
+[node name="UserName" type="Label" parent="Header/_/Logged/_/MainBlock" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -184,8 +183,9 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="Plan" type="Label" parent="Header/_/Logged/_/_" index="1"]
+[node name="Plan" type="Label" parent="Header/_/Logged/_/MainBlock" index="1"]
 
+visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -205,15 +205,15 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[node name="Logout" type="Button" parent="Header/_/Logged/_/_" index="2"]
+[node name="Logout" type="Button" parent="Header/_/Logged/_/MainBlock" index="2"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 36.0
+margin_top = 18.0
 margin_right = 140.0
-margin_bottom = 56.0
+margin_bottom = 38.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -237,9 +237,9 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 148.0
-margin_right = 212.0
-margin_bottom = 64.0
-rect_min_size = Vector2( 64, 64 )
+margin_right = 196.0
+margin_bottom = 48.0
+rect_min_size = Vector2( 48, 48 )
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -259,9 +259,8 @@ anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 864.0
-margin_top = 16.0
 margin_right = 1004.0
-margin_bottom = 110.0
+margin_bottom = 76.0
 rect_min_size = Vector2( 140, 0 )
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -274,6 +273,7 @@ _sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect", "Size Flags
 
 [node name="_" type="Label" parent="Header/_/NotLogged" index="0"]
 
+visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -287,7 +287,7 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 4
 custom_colors/font_color = Color( 0.4, 0.4, 0.4, 1 )
-text = "You're not logged"
+text = "You're not logged in"
 align = 1
 percent_visible = 1.0
 lines_skipped = 0
@@ -300,9 +300,8 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 18.0
 margin_right = 140.0
-margin_bottom = 42.0
+margin_bottom = 24.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -325,9 +324,9 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 46.0
+margin_top = 28.0
 margin_right = 140.0
-margin_bottom = 70.0
+margin_bottom = 52.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -351,9 +350,9 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 74.0
+margin_top = 56.0
 margin_right = 140.0
-margin_bottom = 94.0
+margin_bottom = 76.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -377,9 +376,9 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 144.0
+margin_top = 94.0
 margin_right = 1024.0
-margin_bottom = 212.0
+margin_bottom = 162.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -796,7 +795,7 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 216.0
+margin_top = 166.0
 margin_right = 1024.0
 margin_bottom = 600.0
 rect_pivot_offset = Vector2( 0, 0 )
@@ -820,7 +819,7 @@ anchor_bottom = 0.0
 margin_left = 8.0
 margin_top = 8.0
 margin_right = 1016.0
-margin_bottom = 376.0
+margin_bottom = 426.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = true
 mouse_filter = 0
@@ -910,7 +909,7 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
-[connection signal="pressed" from="Header/_/Logged/_/_/Logout" to="." method="_on_Logout_pressed"]
+[connection signal="pressed" from="Header/_/Logged/_/MainBlock/Logout" to="." method="_on_Logout_pressed"]
 
 [connection signal="text_changed" from="Header/_/NotLogged/UserName" to="." method="_on_any_login_text_changed"]
 

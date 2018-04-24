@@ -22,12 +22,18 @@ onready var size_label = find_node("Size")
 
 var uid
 var imported_path
+var view_url
+var download_url
+var download_size
 
 func set_uid(uid):
 	self.uid = uid
 
 func _ready():
 	$All.visible = false
+	var editor_scale = SceneTree.get_meta("__editor_scale")
+	image.rect_min_size *= editor_scale
+	rect_size *= editor_scale
 
 func _on_about_to_show():
 	if !uid:
@@ -37,12 +43,39 @@ func _on_about_to_show():
 	# Setup download button
 
 	if Api.get_token():
-		download.text = "Download"
+		# Request download link
+
+		var result = yield(api.request_download(uid), "completed")
+		if !get_tree():
+			return
+
+		if typeof(result) == TYPE_INT && result == Api.NOT_AUTHORIZED:
+			OS.alert("Your session may have expired. Please log in again.", "Not authorized")
+			hide()
+			return
+
+		if typeof(result) != TYPE_DICTIONARY:
+			hide()
+			return
+
+		var gtlf = SafeData.dictionary(result, "gltf")
+		if !gtlf.size():
+			OS.alert("This model has not a glTF version.", "Sorry")
+			hide()
+			return
+
+		download_url = SafeData.string(gtlf, "url")
+		download_size = SafeData.integer(gtlf, "size")
+		if !download_url:
+			hide()
+			return
+
+		download.text = "Download (%.1f MiB)" % [download_size / (1024 * 1024)]
 	else:
-		download.text = "You must be logged in order to download models."
+		download.text = "To download models you need to be logged in."
 		download.disabled = true
 
-	# Populate information
+	# Populate other information
 
 	var data = yield(api.get_model_detail(uid), "completed")
 	if typeof(data) != TYPE_DICTIONARY:
@@ -53,6 +86,8 @@ func _on_about_to_show():
 
 	var user = SafeData.dictionary(data, "user")
 	label_user.text = "by %s" % SafeData.string(user, "displayName")
+
+	view_url = SafeData.string(data, "viewerUrl")
 
 	var thumbnails = SafeData.dictionary(data, "thumbnails")
 	var images = SafeData.array(thumbnails, "images")
@@ -86,46 +121,19 @@ func _on_Download_pressed():
 		hide()
 		return
 
-	# Request download link
-
-	download.disabled = true
-
-	var result = yield(api.request_download(uid), "completed")
-	if !get_tree():
-		return
-
-	download.disabled = false
-
-	if typeof(result) == TYPE_INT && result == Api.NOT_AUTHORIZED:
-		OS.alert("Your session may have expired. Please log in again.", "Not authorized")
-		return
-
-	if typeof(result) != TYPE_DICTIONARY:
-		return
-
-	var gtlf = SafeData.dictionary(result, "gltf")
-	if !gtlf.size():
-		OS.alert("This model has not a glTF version.", "Sorry")
-		return
-
-	var url = SafeData.string(gtlf, "url")
-	var size = SafeData.integer(gtlf, "size")
-	if !url:
-		return
-
 	# Download file
 
 	download.visible = false
 	progress.value = 0
-	progress.max_value = size
+	progress.max_value = download_size
 	progress.visible = true
 	size_label.visible = true
-	size_label.text = "    %.1f MiB" % (size / (1024 * 1024))
+	size_label.text = "    %.1f MiB" % (download_size / (1024 * 1024))
 
-	var host_idx = url.find("//") + 2
-	var path_idx = url.find("/", host_idx)
-	var host = url.substr(host_idx, path_idx - host_idx)
-	var path = url.right(path_idx)
+	var host_idx = download_url.find("//") + 2
+	var path_idx = download_url.find("/", host_idx)
+	var host = download_url.substr(host_idx, path_idx - host_idx)
+	var path = download_url.right(path_idx)
 
 	downloader = Requestor.new(host, true)
 
@@ -134,12 +142,12 @@ func _on_Download_pressed():
 
 	var file_regex = RegEx.new()
 	file_regex.compile("[^/]+?\\.zip")
-	var filename = file_regex.search(url).get_string()
+	var filename = file_regex.search(download_url).get_string()
 	var zip_path = "res://sketchfab/%s" % filename
 
 	downloader.connect("download_progressed", self, "_on_download_progressed")
 	downloader.request(path, null, { "download_to": zip_path })
-	result = yield(downloader, "completed")
+	var result = yield(downloader, "completed")
 	if !result:
 		return
 	downloader.term()
@@ -194,3 +202,6 @@ func _on_download_progressed(bytes, total_bytes):
 	if !get_tree():
 		downloader.term()
 	progress.value = bytes
+
+func _on_ViewOnSite_pressed():
+	OS.shell_open(view_url)
