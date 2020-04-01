@@ -147,7 +147,7 @@ func _handle_result(result):
 	# HTTP error
 	var kind = result.code / 100
 	if kind == 4:
-		return NOT_AUTHORIZED
+		return SymbolicErrors.NOT_AUTHORIZED
 	elif kind == 5:
 		OS.alert('Server error. Try again later.', 'Error')
 		return null

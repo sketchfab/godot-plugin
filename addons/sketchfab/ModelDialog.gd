@@ -49,7 +49,7 @@ func _on_about_to_show():
 		if !get_tree():
 			return
 
-		if typeof(result) == TYPE_INT && result == Api.NOT_AUTHORIZED:
+		if typeof(result) == TYPE_INT && result == Api.SymbolicErrors.NOT_AUTHORIZED:
 			OS.alert("Your session may have expired. Please log in again.", "Not authorized")
 			hide()
 			return
