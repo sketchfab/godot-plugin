@@ -54,10 +54,10 @@ func _enter_tree():
 	cfg.load(CONFIG_FILE_PATH)
 
 	find_node("Logo").texture = (
-		Utils.create_texture_from_file("res://addons/sketchfab/sketchfab.png.noimport", SceneTree.get_meta("__editor_scale") / 2.0))
+		Utils.create_texture_from_file("res://addons/sketchfab/sketchfab.png.noimport", get_tree().get_meta("__editor_scale") / 2.0))
 
 func _ready():
-	var editor_scale = SceneTree.get_meta("__editor_scale")
+	var editor_scale = get_tree().get_meta("__editor_scale")
 	logged_avatar.rect_min_size *= editor_scale
 	not_logged.rect_min_size *= editor_scale
 	logged.find_node("MainBlock").rect_min_size *= editor_scale

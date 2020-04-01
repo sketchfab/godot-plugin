@@ -18,7 +18,7 @@ func set_data(data):
 	self.data = data
 
 func _enter_tree():
-	rect_min_size *= SceneTree.get_meta("__editor_scale")
+	rect_min_size *= get_tree().get_meta("__editor_scale")
 
 func _ready():
 	if !data:

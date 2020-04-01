@@ -31,7 +31,7 @@ func set_uid(uid):
 
 func _ready():
 	$All.visible = false
-	var editor_scale = SceneTree.get_meta("__editor_scale")
+	var editor_scale = get_tree().get_meta("__editor_scale")
 	image.rect_min_size *= editor_scale
 	rect_size *= editor_scale
 
