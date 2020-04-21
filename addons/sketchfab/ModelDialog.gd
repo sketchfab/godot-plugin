@@ -31,7 +31,7 @@ func set_uid(uid):
 
 func _ready():
 	$All.visible = false
-	var editor_scale = SceneTree.get_meta("__editor_scale")
+	var editor_scale = get_tree().get_meta("__editor_scale")
 	image.rect_min_size *= editor_scale
 	rect_size *= editor_scale
 
@@ -49,7 +49,7 @@ func _on_about_to_show():
 		if !get_tree():
 			return
 
-		if typeof(result) == TYPE_INT && result == Api.NOT_AUTHORIZED:
+		if typeof(result) == TYPE_INT && result == Api.SymbolicErrors.NOT_AUTHORIZED:
 			OS.alert("Your session may have expired. Please log in again.", "Not authorized")
 			hide()
 			return
