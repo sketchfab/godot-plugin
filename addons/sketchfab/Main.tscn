@@ -448,15 +448,43 @@ lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "Anchor", "Focus", "Margin", "Rect", "Size Flags" ]
 
-[node name="Text" type="LineEdit" parent="Search/_/_" index="1"]
+[node name="SearchDomain" type="OptionButton" parent="Search/_/_" index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 56.0
-margin_right = 878.0
+margin_top = 5.0
+margin_right = 146.0
+margin_bottom = 19.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+size_flags_horizontal = 1
+size_flags_vertical = 4
+toggle_mode = false
+action_mode = 0
+enabled_focus_mode = 2
+shortcut = null
+group = null
+flat = false
+align = 0
+items = [  ]
+selected = -1
+_sections_unfolded = [ "Rect", "Size Flags" ]
+rect_max_size = Vector2( 120, 0 )
+
+
+[node name="Text" type="LineEdit" parent="Search/_/_" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+
+margin_left = -56.0
+margin_right = -56
 margin_bottom = 24.0
+
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -472,7 +500,7 @@ caret_blink_speed = 0.65
 caret_position = 0
 _sections_unfolded = [ "Caret", "Placeholder", "Size Flags" ]
 
-[node name="Button" type="Button" parent="Search/_/_" index="2"]
+[node name="Button" type="Button" parent="Search/_/_" index="3"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -868,46 +896,22 @@ custom_constants/hseparation = 16
 columns = 6
 _sections_unfolded = [ "Size Flags", "custom_constants" ]
 
-[node name="Trailer" type="CenterContainer" parent="_2/Paginator/_" index="1"]
+[node name="Trailer" type="VBoxContainer" parent="_2/Paginator/_" index="1"]
 
 modulate = Color( 1, 1, 1, 0 )
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_top = 4.0
-margin_right = 1008.0
-margin_bottom = 104.0
-rect_min_size = Vector2( 0, 100 )
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
 size_flags_horizontal = 3
 size_flags_vertical = 1
-use_top_left = false
-_sections_unfolded = [ "Rect", "Size Flags" ]
 
 [node name="Label" type="Label" parent="_2/Paginator/_/Trailer" index="0"]
 
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 471.0
-margin_top = 43.0
-margin_right = 537.0
-margin_bottom = 57.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
+size_flags_horizontal = 4
 text = "Fetching..."
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
+
+[node name="CTA" type="Button" parent="_2/Paginator/_/Trailer" index="1"]
+
+disabled=false
+size_flags_horizontal = 4
+text = "Upgrade to PRO"
 
 [connection signal="pressed" from="Header/_/Logged/_/MainBlock/Logout" to="." method="_on_Logout_pressed"]
 
@@ -930,6 +934,8 @@ max_lines_visible = -1
 [connection signal="pressed" from="Search/_/_3/_/StaffPicked" to="." method="_on_any_search_trigger_changed"]
 
 [connection signal="item_selected" from="Search/_/_3/_/_/SortBy" to="." method="_on_SortBy_item_selected"]
+
+[connection signal="item_selected" from="Search/_/_/SearchDomain" to="." method="_on_SearchDomain_item_selected"]
 
 [connection signal="item_selected" from="Search/_/_3/_/_2/FaceCount" to="." method="_on_FaceCount_item_selected"]
 
