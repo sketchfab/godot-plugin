@@ -118,7 +118,7 @@ func request(path, payload = null, options = DEFAULT_OPTIONS):
 		if payload:
 			var encoding = _get_option(options, "encoding")
 			if encoding == "query":
-				uri += "?" + _dict_to_query_string(payload)
+				uri += "&" + _dict_to_query_string(payload)
 			elif encoding == "json":
 				headers.append("Content-Type: application/json")
 				encoded_payload = to_json(payload)

@@ -93,11 +93,9 @@ func request_download(uid):
 
 	return _handle_result(result)
 
-func search_models(q, categories, animated, staff_picked, min_face_count, max_face_count, sort_by):
-	var query = {
-		"type": "models",
-		"downloadable": "true",
-	}
+func search_models(q, categories, animated, staff_picked, min_face_count, max_face_count, sort_by, domain_suffix):
+
+	var query = {}
 
 	if q:
 		query.q = q
@@ -115,7 +113,9 @@ func search_models(q, categories, animated, staff_picked, min_face_count, max_fa
 		query.sort_by = sort_by
 
 	busy = true
-	requestor.request("%s/search" % BASE_PATH, query)
+
+	var search_domain = BASE_PATH + domain_suffix
+	requestor.request(search_domain, query, { "token": get_token() })
 
 	var result = yield(requestor, "completed")
 	busy = false

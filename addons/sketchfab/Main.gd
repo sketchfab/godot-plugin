@@ -19,7 +19,15 @@ const SORT_BY_OPTIONS = [
 	["Likes", "-likeCount"],
 	["Views", "-viewCount"],
 ]
+
+const SEARCH_DOMAIN = [
+	["Whole site", "/search?type=models&downloadable=true"],
+	["Own models (PRO)", "/me/search?type=models&downloadable=true"],
+	["Purchased models", "/me/models/purchases?"],
+]
+
 const SORT_BY_DEFAULT_INDEX = 1
+const DEFAULT_DOMAIN = 0
 
 const SafeData = preload("res://addons/sketchfab/SafeData.gd")
 const Utils = preload("res://addons/sketchfab/Utils.gd")
@@ -32,6 +40,9 @@ onready var search_animated = find_node("Search").find_node("Animated")
 onready var search_staff_picked = find_node("Search").find_node("StaffPicked")
 onready var search_face_count = find_node("Search").find_node("FaceCount")
 onready var search_sort_by = find_node("Search").find_node("SortBy")
+onready var search_domain = find_node("Search").find_node("SearchDomain")
+onready var cta_button = find_node("CTA")
+onready var trailer = find_node("Trailer")
 
 onready var paginator = find_node("Paginator")
 
@@ -87,6 +98,12 @@ func _notification(what):
 		search_sort_by.add_item(item[0])
 	_commit_sort_by(SORT_BY_DEFAULT_INDEX)
 
+	for item in SEARCH_DOMAIN:
+		search_domain.add_item(item[0])
+	_commit_domain(DEFAULT_DOMAIN)
+	search_domain.hide()
+	cta_button.hide()
+
 	logged.visible = false
 	not_logged.visible = false
 	login_name.text = cfg.get_value("api", "user", "")
@@ -135,6 +152,10 @@ func _on_SortBy_item_selected(index):
 	_commit_sort_by(index)
 	_search()
 
+func _on_SearchDomain_item_selected(index):
+	_commit_domain(index)
+	_search()
+
 func _on_SearchButton_pressed():
 	_search()
 
@@ -164,6 +185,9 @@ func _login():
 	cfg.save(CONFIG_FILE_PATH)
 
 func _populate_login():
+
+	search_domain.show()
+
 	_set_login_disabled(true)
 	var user = yield(api.get_my_info(), "completed")
 	_set_login_disabled(false)
@@ -182,7 +206,9 @@ func _populate_login():
 	logged_name.text = "User: %s" % user["username"]
 
 	var plan_name
-	if user["account"] == "pro":
+	if user["account"] == "plus":
+		plan_name = "PLUS"
+	elif user["account"] == "pro":
 		plan_name = "PRO"
 	elif user["account"] == "prem":
 		plan_name = "PREMIUM"
@@ -207,6 +233,10 @@ func _logout():
 	not_logged.visible = true
 	logged.visible = false
 	logged_avatar.url = null
+	search_domain.hide()
+	cta_button.hide()
+	trailer.modulate.a = 0.0
+	search_domain.set_meta("__suffix", SEARCH_DOMAIN[0][1])
 
 func _load_categories():
 	var result = yield(api.get_categories(), "completed")
@@ -232,7 +262,8 @@ func _search():
 		search_staff_picked.pressed,
 		search_face_count.get_meta("__data")[1],
 		search_face_count.get_meta("__data")[2],
-		search_sort_by.get_meta("__key")
+		search_sort_by.get_meta("__key"),
+		search_domain.get_meta("__suffix")
 	)
 
 ##### Helpers
@@ -287,6 +318,9 @@ func _commit_face_count(index):
 
 func _commit_sort_by(index):
 	search_sort_by.set_meta("__key", SORT_BY_OPTIONS[index][1])
+
+func _commit_domain(index):
+	search_domain.set_meta("__suffix", SEARCH_DOMAIN[index][1])
 
 func _set_login_disabled(disabled):
 	login_name.editable = !disabled
