@@ -1,11 +1,11 @@
-tool
+@tool
 extends Object
 
 const OAUTH_HOSTNAME = "sketchfab.com"
 const API_HOSTNAME = "api.sketchfab.com"
 const USE_SSL = true
 const BASE_PATH = "/v3"
-const CLIENT_ID = "a99JEwOhmIWHdRRDDgBsxbBf8ufC0ACoUcDAifSV"
+const CLIENT_ID = "IUO8d5VVOIUCzWQArQ3VuXfbwx5QekZfLeDlpOmW"
 
 enum SymbolicErrors {
 	NOT_AUTHORIZED,
@@ -23,14 +23,14 @@ static func set_token(token):
 const Requestor = preload("res://addons/sketchfab/Requestor.gd")
 var Result = Requestor.Result
 
-var requestor = Requestor.new(API_HOSTNAME, USE_SSL)
+var requestor = Requestor.new(API_HOSTNAME)
 var busy = false
 
 func term():
 	requestor.term()
 
 func cancel():
-	yield(requestor.cancel(), "completed")
+	await requestor.cancel()
 
 func login(username, password):
 	var query = {
@@ -39,13 +39,13 @@ func login(username, password):
 	}
 
 	busy = true
-	var requestor = Requestor.new(OAUTH_HOSTNAME, USE_SSL)
+	var requestor = Requestor.new(OAUTH_HOSTNAME)
 	requestor.request(
 		"/oauth2/token/?grant_type=password&client_id=%s" % CLIENT_ID, query,
 		{ "method": HTTPClient.METHOD_POST, "encoding": "form" }
 	)
 
-	var result = yield(requestor, "completed")
+	var result = await requestor.completed
 	requestor.term()
 	busy = false
 
@@ -61,7 +61,7 @@ func login(username, password):
 func get_my_info():
 	busy = true
 	requestor.request("%s/me" % BASE_PATH, null, { "token": get_token() })
-	var result = yield(requestor, "completed")
+	var result = await requestor.completed
 	busy = false
 
 	return _handle_result(result)
@@ -70,7 +70,7 @@ func get_categories():
 	busy = true
 	requestor.request("%s/categories" % BASE_PATH)
 
-	var result = yield(requestor, "completed")
+	var result = await requestor.completed
 	busy = false
 
 	return _handle_result(result)
@@ -79,7 +79,7 @@ func get_model_detail(uid):
 	busy = true
 	requestor.request("%s/models/%s" % [BASE_PATH, uid])
 
-	var result = yield(requestor, "completed")
+	var result = await requestor.completed
 	busy = false
 
 	return _handle_result(result)
@@ -88,7 +88,7 @@ func request_download(uid):
 	busy = true
 	requestor.request("%s/models/%s/download" % [BASE_PATH, uid], null, { "token": get_token() })
 
-	var result = yield(requestor, "completed")
+	var result = await requestor.completed
 	busy = false
 
 	return _handle_result(result)
@@ -117,19 +117,19 @@ func search_models(q, categories, animated, staff_picked, min_face_count, max_fa
 	var search_domain = BASE_PATH + domain_suffix
 	requestor.request(search_domain, query, { "token": get_token() })
 
-	var result = yield(requestor, "completed")
+	var result = await requestor.completed
 	busy = false
 
 	return _handle_result(result)
 
 func fetch_next_page(url):
 	# Strip protocol + domain
-	var uri = url.right(url.find(API_HOSTNAME) + API_HOSTNAME.length())
+	var uri = url.right(url.length() - url.find(API_HOSTNAME) - API_HOSTNAME.length())
 
 	busy = true
 	requestor.request(uri)
 
-	var result = yield(requestor, "completed")
+	var result = await requestor.completed
 	busy = false
 
 	return _handle_result(result)
