@@ -1,4 +1,3 @@
-[gd_scene format=2]
+[gd_scene format=3 uid="uid://scfkut8juyym"]
 
-[node name="Spatial" type="Spatial" index="0"]
-
+[node name="Node3D" type="Node3D"]
